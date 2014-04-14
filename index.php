@@ -1,10 +1,10 @@
 <?php
 
-$this_month = isset($_GET['ym']) ? $_GET['ym'] : date("Y-n");
+$this_month = isset($_GET['ym']) ? $_GET['ym'] : date('Y-n');
 
 $timestamp = strtotime($this_month . "-01");
 
-$today_d = date("d");
+$today_d = date('d');
 $today_m = date("Y-n");
 
 if ($timestamp === false) {
@@ -63,8 +63,9 @@ $week =  '';
 
 $week .= str_repeat('<td></td>', $this_m_youbi);
 
+
 for ($day = 1; $day <= $this_m_lastday ; $day ++,$this_m_youbi ++) { 
-	if ($day == $today_d && $this_month == $today_m) {
+if ($day == $today_d && $this_month == $today_m) {
 		$week .= sprintf('<td class = "today_color">%d</td>', $day);
 	}else{
 		$week .= sprintf('<td class = "youbi_%d">%d</td>',$this_m_youbi % 7, $day);
