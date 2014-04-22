@@ -26,11 +26,15 @@ list($next_year, $next_month) = explode('-', date('Y-n', mktime(0, 0, 0, $this_m
  * $calendar_number分の年月情報$calendar_y_mを取得
  *(下のcalendar_makeも一緒にまわす？？)
  */
+
+//カレンダーの数から、何ヶ月分前から取得する必要があるのかを計算
 $c_count = -floor($calendar_number/2);
 for ($i=0; $i < $calendar_number ; $i++) { 
     $y = date('Y',mktime(0, 0, 0,$this_month + $c_count, 1, $this_year));
     $m = date('n',mktime(0, 0, 0,$this_month + $c_count, 1, $this_year));
-    $calendar_y_m[$i] = array('calendar_y' => $y, 'calendar_m' => $m);
+    //$calendar_y_m[$i] = array('calendar_y' => $y, 'calendar_m' => $m);
+    $calendar_y_m[$i]['calendar_y'] = $y;
+    $calendar_y_m[$i]['calendar_m'] = $m;
     $c_count++;
 };
 
@@ -94,12 +98,6 @@ function calendar($year, $month, $holidays){
             $week_number++;
             $weekday_count = 0;
         }
-
-        // $weekday_count++;
-        // if (($weekday_count + 1) %7 == 0) {
-        //     $week_number++;
-        //     $weekday_count = 0;
-        // }
 
     }
     return array(
@@ -170,7 +168,8 @@ function holidays($year, $month, $calendar_number){
  */
 
 function aucColum() {
-    $rss = 'http://college.aucfan.com/column/feed/';
+    //$rss = 'http://college.aucfan.com/column/feed/';
+    $rss ='http://aucfan.com/article/feed/';
     $xml = simplexml_load_file($rss);
     //ファイルがとれなければ終わる
     if (isset($xml)) {
@@ -190,7 +189,6 @@ function aucColum() {
     return $auc_colum_data;
 }
 
-//var_dump($day_class);exit();
 ?>
 
 
@@ -260,7 +258,11 @@ function aucColum() {
                     <?php $day = $week[$year][$month][$j][$i]?>
                     <td class='<?php echo $day_class[$year][$month][$day]['W'];?>'>
                     <div class='<?php echo $day_class[$year][$month][$day]['Today'];?>'>
-                        <?php if (isset($day) == false){ echo '';} else {echo $day;}?>
+                        <?php if (isset($day) == false) :?>
+                            <?php echo '';?>
+                        <?php else :?>
+                            <?php echo $day;?>
+                        <?php endif ?>
                     </div>
                         <div class='holidayInfo'>
                             <?php echo $holidays[$year][$month][$day];?>
