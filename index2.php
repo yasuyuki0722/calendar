@@ -191,10 +191,43 @@ function aucColum() {
 }
 
 
-/*
+/*DBから予定取得
  *
  *
  */
+
+
+$url = 'localhost';
+$user = 'root';
+$pass  ='';
+$db= 'mydb';
+
+//MySQLに接続
+$link = mysqli_connect($url, $user, $pass, $db);
+
+//接続状態チェック
+if (mysqli_connect_errno()) {
+    die(mysqli_conect_error());
+}
+
+$insert = sprintf('INSERT INTO schedules (schedule_title, schedule_plan, schedule_start, schedule_end) VALUES ("%s", "%s","%s",%s)', $_POST['sch_title'], $_POST['sch_plan'], $_POST['sch_start'], $_POST['sch_end']);
+//mysqli_queryに配列がかえるかfalseがかえる
+//if ($result = mysqli_query($link, 'SELECT * from test_t')) {
+if ($result = mysqli_query($link, $insert)) {
+    $result = mysqli_query($link, 'SELECT * from schedules');
+    while ($row = mysqli_fetch_array($result, MYSQLI_NUM)) {
+        echo $row[0].$row[1].$row[2].$row[3].$row[4].'<br>';
+    }
+    //結果セットの解放
+    mysqli_free_result($result);
+} else {
+    echo "失敗！";
+}
+
+mysqli_close($link);
+
+
+
 
 
 ?>
