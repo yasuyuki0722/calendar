@@ -43,3 +43,12 @@ th {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.scheduleInfo{
+    text-align: left;
+    width: 70px;
+    font-size: 10px;
+/*    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;*/
+}
