@@ -1,3 +1,4 @@
+
 <?php
 
 date_default_timezone_get('Asia/Tolyo');
@@ -188,6 +189,13 @@ function aucColum() {
     }
     return $auc_colum_data;
 }
+
+
+/*
+ *
+ *
+ */
+
 
 ?>
 
