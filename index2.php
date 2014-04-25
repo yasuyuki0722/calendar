@@ -1,5 +1,6 @@
 
 <?php
+$cal_regi_link = 'http://192.168.33.10/calendar/cal_regi.php?y_m_d=';
 
 date_default_timezone_get('Asia/Tolyo');
 
@@ -221,13 +222,10 @@ function schedulesGet($year, $month, $calendar_number){
     //mysqli_queryに配列がかえるかfalseがかえる
     if ($result = mysqli_query($link, $select)) {
         while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-            list($sch_y, $sch_m, $sch_d) = explode('-', date('Y-n-d',strtotime($row['schedule_start'])));
-//            $schedule[$sch_y][$sch_m][$sch_d] = array('title' => $row['schedule_title']);
-            $schedule[$sch_y][$sch_m][$sch_d][$row['schedule_title']] = array('plan' => $row['schedule_plan']);
-            // $sche[$row['schedule_start']] = array(
-            //     'sch_title' => $row['schedule_title'],
-            //     'sch_plan' => $row['schedule_plan']
-            //     );
+            list($sch_y, $sch_m, $sch_d) = explode('-', date('Y-n-j',strtotime($row['schedule_start'])));
+            //$schedule[$sch_y][$sch_m][$sch_d][$row['schedule_title']] = array('plan' => $row['schedule_plan']);
+            $schedule[$sch_y][$sch_m][$sch_d][$row['schedule_id']]['title'] = $row['schedule_title'];
+            $schedule[$sch_y][$sch_m][$sch_d][$row['schedule_id']]['plan'] = $row['schedule_plan'];
         }
         mysqli_free_result($result);
     } else {
@@ -240,7 +238,7 @@ function schedulesGet($year, $month, $calendar_number){
 }
 
 $schedule = schedulesGet($this_year,$this_month,$calendar_number);
-
+//var_dump($schedule);exit();
 
 ?>
 
@@ -318,7 +316,7 @@ $schedule = schedulesGet($this_year,$this_month,$calendar_number);
                             <?php if (isset($day) == false) :?>
                                 <?php echo '';?>
                             <?php else :?>
-                                <a href="http://192.168.33.10/calendar/cal_regi.php?y_m_d=<?php echo $year.'-'.$month.'-'.$day;?> "> <?php echo $day;?> </a>
+                                <a href="<?php echo $cal_regi_link.$year.'-'.$month.'-'.$day;?> " > <?php echo $day;?> </a>
                             <?php endif ?>
                         </div>
 
@@ -336,8 +334,8 @@ $schedule = schedulesGet($this_year,$this_month,$calendar_number);
                         <!-- スケジュール -->
                         <div class="scheduleInfo">
                         <?php if (isset($schedule[$year][$month][$day])):?>
-                        <?php foreach ($schedule[$year][$month][$day] as $key => $value) :?>
-                            - <?php echo $key;?> <br>
+                        <?php foreach ($schedule[$year][$month][$day] as $key => $value) :?> 
+                            <a href="<?php echo 'cal_edit.php?id='.$key ;?>" > <?php echo '-'.$value['title'];?> <br> </a>
                         <?php endforeach;?>
                         <?php endif ;?>
                         </div>
