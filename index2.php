@@ -200,10 +200,10 @@ function aucColum() {
 function schedulesGet($year, $month, $calendar_number){
     $count = -floor($calendar_number/2);
     //予定取得開始日
-    $start_date  = date('Y-n-01', mktime(0, 0, 0,$month + $count, 1, $year));
+    $start_date  = date('Y-n-01 00:00:00', mktime(0, 0, 0,$month + $count, 1, $year));
 
     //予定取得終了日
-    $finish_date = date('Y-n-t', mktime(0, 0, 0,$month + $count + $calendar_number - 1, 1, $year));
+    $finish_date = date('Y-n-t 23:59:59', mktime(0, 0, 0,$month + $count + $calendar_number - 1, 1, $year));
 
     $url = 'localhost';
     $user = 'root';
@@ -218,7 +218,7 @@ function schedulesGet($year, $month, $calendar_number){
         die(mysqli_conect_error());
     }
 
-    $select = sprintf('SELECT * FROM cal_schedules WHERE schedule_start BETWEEN "%s" AND "%s"', $start_date, $finish_date);
+    $select = sprintf('SELECT * FROM cal_schedules WHERE deleted_at IS NULL AND schedule_start BETWEEN "%s" AND "%s"', $start_date, $finish_date);
     //mysqli_queryに配列がかえるかfalseがかえる
     if ($result = mysqli_query($link, $select)) {
         while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
@@ -289,7 +289,7 @@ $schedule = schedulesGet($this_year,$this_month,$calendar_number);
     $day_class = $value[0]['day_class'];
     ?>
 
-    <table border='0' style='float:left'">
+    <table class="calendar">
         <thead>
             <tr>
                 <th colspan='7'><?php echo $year.'年'.$month.'月' ;?></th>
@@ -335,7 +335,7 @@ $schedule = schedulesGet($this_year,$this_month,$calendar_number);
                         <div class="scheduleInfo">
                         <?php if (isset($schedule[$year][$month][$day])):?>
                         <?php foreach ($schedule[$year][$month][$day] as $key => $value) :?> 
-                            <a href="<?php echo 'cal_edit.php?id='.$key ;?>" > <?php echo '-'.$value['title'];?> <br> </a>
+                            <a href="<?php echo 'cal_edit.php?id='.$key ;?>" title = '<?php echo $value['plan'];?>'> <?php echo '-'.$value['title'];?> <br> </a>
                         <?php endforeach;?>
                         <?php endif ;?>
                         </div>

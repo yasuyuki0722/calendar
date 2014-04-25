@@ -1,54 +1,61 @@
+
+body{
+    text-align: center;
+    margin: 0 auto;
+}
+
+a{
+    text-decoration: none;
+}
+
+.calendar{
+    vertical-align:top; 
+    display: inline-block;
+}
+
 th,td{
-	padding: 8px;
-	border 1px solid #ccc;
-	text-align:center;
+    padding: 8px;
+    border 1px solid #ccc;
+    text-align:center;
     vertical-align: top;
     width: 70px;
     height: 50px;
 }
-
 th {
-	background: #eee;
+    background: #eee;
     height: 20px;
 }
-
-
-
 .Sun{
     background: mistyrose;
 }
-
 .Sat{
     background: aqua;
 }
-
 .today{
     background-color: lime;
 }
-
 .weekday_holiday {
-	color: red;
+    color: red;
 }
-
 .holidayInfo {
     width: 70px;
     font-size: 11px;
     color: red;
 }
-
 .aucColumInfo{
     width: 70px;
     font-size: 10px;
+    background-color: lavender;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
 .scheduleInfo{
     text-align: left;
     width: 70px;
     font-size: 10px;
-/*    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;*/
+    background-color: lightgoldenrodyellow  ;
+    white-space: nowrap;
+    overflow: scroll;
+    text-overflow: ellipsis;
 }
