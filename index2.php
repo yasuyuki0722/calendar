@@ -1,4 +1,6 @@
+
 <?php
+$cal_regi_link = 'http://192.168.33.10/calendar/cal_regi.php?y_m_d=';
 
 date_default_timezone_get('Asia/Tolyo');
 
@@ -180,7 +182,7 @@ function aucColum() {
 //xmlから年月日とtitle、linkを取得
     foreach ($xml->channel->item as $value) {
         $pub_date = $value->pubDate;
-        list($year,$month,$day) = explode('-',date('Y-n-j',strtotime($pub_date)));
+        list($year, $month, $day) = explode('-', date('Y-n-j', strtotime($pub_date)));
         $auc_colum_data[$year][$month][$day] = array(
             'title' => $value->title,
             'link' => $value->link
@@ -188,6 +190,56 @@ function aucColum() {
     }
     return $auc_colum_data;
 }
+
+
+/*DBから予定取得
+ *
+ *
+ */
+
+function schedulesGet($year, $month, $calendar_number){
+    $count = -floor($calendar_number/2);
+    //予定取得開始日
+    $start_date  = date('Y-n-01 00:00:00', mktime(0, 0, 0,$month + $count, 1, $year));
+
+    //予定取得終了日
+    $finish_date = date('Y-n-t 23:59:59', mktime(0, 0, 0,$month + $count + $calendar_number - 1, 1, $year));
+
+    $url = 'localhost';
+    $user = 'root';
+    $pass  ='';
+    $db= 'calendar';
+
+    //MySQLに接続
+    $link = mysqli_connect($url, $user, $pass, $db);
+
+    //接続状態チェック
+    if (mysqli_connect_errno()) {
+        die(mysqli_conect_error());
+    }
+
+    $select = sprintf('SELECT * FROM cal_schedules WHERE deleted_at IS NULL AND schedule_start BETWEEN "%s" AND "%s"', $start_date, $finish_date);
+
+    //mysqli_queryに配列がかえるかfalseがかえる
+    if ($result = mysqli_query($link, $select)) {
+        while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+            list($sch_y, $sch_m, $sch_d) = explode('-', date('Y-n-j',strtotime($row['schedule_start'])));
+            //$schedule[$sch_y][$sch_m][$sch_d][$row['schedule_title']] = array('plan' => $row['schedule_plan']);
+            $schedule[$sch_y][$sch_m][$sch_d][$row['schedule_id']]['title'] = $row['schedule_title'];
+            $schedule[$sch_y][$sch_m][$sch_d][$row['schedule_id']]['plan'] = $row['schedule_plan'];
+        }
+        mysqli_free_result($result);
+    } else {
+        echo "失敗！";
+    }
+
+    mysqli_close($link);
+
+    return $schedule;
+}
+
+$schedule = schedulesGet($this_year,$this_month,$calendar_number);
+//var_dump($schedule);exit();
 
 ?>
 
@@ -238,7 +290,7 @@ function aucColum() {
     $day_class = $value[0]['day_class'];
     ?>
 
-    <table border='0' style='float:left'">
+    <table class="calendar">
         <thead>
             <tr>
                 <th colspan='7'><?php echo $year.'年'.$month.'月' ;?></th>
@@ -246,32 +298,50 @@ function aucColum() {
         </thead>
 
         <tbody>
+        <!-- 曜日情報 -->
             <tr>
             <?php for ($i=0; $i <= 6; $i++) :?>
                 <td style='height: 20px'> <?php echo $weekday_index[$i];?> </td>
             <?php endfor ?>
             </tr>
+
             <?php for ($j = 0; $j < count($week[$year][$month]);$j ++):?>
             <tr>
                 <?php for ($i=0; $i <= 6; $i++):?>
                     <?php //$i = ($i + 1)%7 mod7で折り返したい;?>
                     <?php $day = $week[$year][$month][$j][$i]?>
                     <td class='<?php echo $day_class[$year][$month][$day]['W'];?>'>
-                    <div class='<?php echo $day_class[$year][$month][$day]['Today'];?>'>
-                        <?php if (isset($day) == false) :?>
-                            <?php echo '';?>
-                        <?php else :?>
-                            <?php echo $day;?>
-                        <?php endif ?>
-                    </div>
+
+                        <!-- 日付情報 -->
+                        <div class='<?php echo $day_class[$year][$month][$day]['Today'];?>'>
+                            <?php if (isset($day) == false) :?>
+                                <?php echo '';?>
+                            <?php else :?>
+                                <a href="<?php echo $cal_regi_link.$year.'-'.$month.'-'.$day;?> " > <?php echo $day;?> </a>
+                            <?php endif ?>
+                        </div>
+
+                        <!-- 祝日情報 -->
                         <div class='holidayInfo'>
                             <?php echo $holidays[$year][$month][$day];?>
                         </div>
+
+                        <!-- オークションコラム -->
                         <div class='aucColumInfo'>
                             <a href=" <?php echo $auc_colum[$year][$month][$day]['link'];?> " title = '<?php echo $auc_colum[$year][$month][$day]['title'];?>' >
                             <?php echo $auc_colum[$year][$month][$day]['title'];?>
                             </a>
                         </div>
+
+                        <!-- スケジュール -->
+                        <div class="scheduleInfo">
+                        <?php if (isset($schedule[$year][$month][$day])):?>
+                        <?php foreach ($schedule[$year][$month][$day] as $key => $value) :?> 
+                            <a href="<?php echo 'cal_edit.php?id='.$key ;?>" title = '<?php echo $value['plan'];?>'> <?php echo '-'.$value['title'];?> <br> </a>
+                        <?php endforeach;?>
+                        <?php endif ;?>
+                        </div>
+
                     </td>
                 <?php endfor;?>
             </tr>
