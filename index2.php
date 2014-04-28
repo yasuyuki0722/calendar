@@ -219,6 +219,7 @@ function schedulesGet($year, $month, $calendar_number){
     }
 
     $select = sprintf('SELECT * FROM cal_schedules WHERE deleted_at IS NULL AND schedule_start BETWEEN "%s" AND "%s"', $start_date, $finish_date);
+
     //mysqli_queryに配列がかえるかfalseがかえる
     if ($result = mysqli_query($link, $select)) {
         while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
@@ -331,6 +332,7 @@ $schedule = schedulesGet($this_year,$this_month,$calendar_number);
                             <?php echo $auc_colum[$year][$month][$day]['title'];?>
                             </a>
                         </div>
+
                         <!-- スケジュール -->
                         <div class="scheduleInfo">
                         <?php if (isset($schedule[$year][$month][$day])):?>

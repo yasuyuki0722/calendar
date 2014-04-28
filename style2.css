@@ -21,27 +21,34 @@ th,td{
     width: 70px;
     height: 50px;
 }
+
 th {
     background: #eee;
     height: 20px;
 }
+
 .Sun{
     background: mistyrose;
 }
+
 .Sat{
     background: aqua;
 }
+
 .today{
     background-color: lime;
 }
+
 .weekday_holiday {
     color: red;
 }
+
 .holidayInfo {
     width: 70px;
     font-size: 11px;
     color: red;
 }
+
 .aucColumInfo{
     width: 70px;
     font-size: 10px;
@@ -50,6 +57,7 @@ th {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 .scheduleInfo{
     text-align: left;
     width: 70px;
