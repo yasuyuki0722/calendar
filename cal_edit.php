@@ -1,4 +1,11 @@
 <?php
+date_default_timezone_get('Asia/Tolyo');
+
+$year_month_day = isset($_GET['y_m_d']) ? $_GET['y_m_d'] : date('Y-n-d');
+$timestamp  = strtotime($year_month_day); 
+if ($timestamp === false) {
+    $timestamp = time();
+}
 
 $schedule_id = isset($_GET['id']) ? $_GET['id']: NULL;
 
@@ -9,32 +16,38 @@ $user = 'root';
 $pass  ='';
 $db = 'calendar';
 
-//MySQLに接続
-$link = mysqli_connect($url, $user, $pass, $db);
+if (isset($schedule_id)) {
+    //MySQLに接続
+    $link = mysqli_connect($url, $user, $pass, $db);
 
-//接続状態チェック
-if (mysqli_connect_errno()) {
-    die(mysqli_conect_error());
-}
-
-$select = sprintf('SELECT * FROM cal_schedules WHERE schedule_id = "%s"', $schedule_id);
-var_dump($select);
-//mysqli_queryに配列がかえるかfalseがかえる
-if ($result = mysqli_query($link, $select)) {
-    while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-        var_dump($row);
-        $sch_detail['start'] = date('Y-n-j', strtotime($row['schedule_start']));
-        $sch_detail['end'] = date('Y-n-j', strtotime($row['schedule_end']));
-        $sch_detail['title'] = $row['schedule_title'];
-        $sch_detail['plan'] = $row['schedule_plan'];
+    //接続状態チェック
+    if (mysqli_connect_errno()) {
+        die(mysqli_conect_error());
     }
-    mysqli_free_result($result);
+
+    $select = sprintf('SELECT * FROM cal_schedules WHERE schedule_id = "%s"', $schedule_id);
+    var_dump($select);
+    //mysqli_queryに配列がかえるかfalseがかえる
+    if ($result = mysqli_query($link, $select)) {
+        while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+            var_dump($row);
+            $sch_detail['start'] = date('Y-n-j', strtotime($row['schedule_start']));
+            $sch_detail['end'] = date('Y-n-j', strtotime($row['schedule_end']));
+            $sch_detail['title'] = $row['schedule_title'];
+            $sch_detail['plan'] = $row['schedule_plan'];
+        }
+        mysqli_free_result($result);
+    } else {
+        echo "失敗！";
+    }
+
+    mysqli_close($link);
 } else {
-    echo "失敗！";
+    $sch_detail['start'] = $year_month_day
+    $sch_detail['end'] = $year_month_day;
+    $sch_detail['title'] = null;
+    $sch_detail['plan'] = null;
 }
-
-mysqli_close($link);
-
 
 ?>
 
