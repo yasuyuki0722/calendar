@@ -1,6 +1,6 @@
 
 <?php
-$cal_regi_link = 'http://192.168.33.10/calendar/cal_regi.php?y_m_d=';
+$cal_regi_link = 'http://192.168.33.10/calendar/cal_edit.php?y_m_d=';
 
 date_default_timezone_get('Asia/Tolyo');
 
@@ -337,7 +337,7 @@ $schedule = schedulesGet($this_year,$this_month,$calendar_number);
                         <div class="scheduleInfo">
                         <?php if (isset($schedule[$year][$month][$day])):?>
                         <?php foreach ($schedule[$year][$month][$day] as $key => $value) :?> 
-                            <a href="<?php echo 'cal_edit.php?id='.$key ;?>" title = '<?php echo $value['plan'];?>'> <?php echo '-'.$value['title'];?> <br> </a>
+                            <a href="<?php echo 'cal_edit.php?y_m_d='.$year.'-'.$month.'-'.$day.'&amp;id='.$key ;?>" title = '<?php echo $value['plan'];?>'> <?php echo '-'.$value['title'];?> <br> </a>
                         <?php endforeach;?>
                         <?php endif ;?>
                         </div>

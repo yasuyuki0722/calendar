@@ -43,7 +43,7 @@ if (isset($schedule_id)) {
 
     mysqli_close($link);
 } else {
-    $sch_detail['start'] = $year_month_day
+    $sch_detail['start'] = $year_month_day;
     $sch_detail['end'] = $year_month_day;
     $sch_detail['title'] = null;
     $sch_detail['plan'] = null;
