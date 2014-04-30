@@ -1,4 +1,5 @@
 <?php
+session_start();
 $cal_regi_link = 'http://192.168.33.10/calendar/cal_edit.php?y_m_d=';
 
 date_default_timezone_get('Asia/Tolyo');
@@ -195,8 +196,9 @@ function aucColum() {
  *
  *
  */
-
 function schedulesGet($year, $month, $calendar_number){
+            global $_SESSION;
+
     $count = -floor($calendar_number/2);
     //予定取得開始日
     $start_date  = date('Y-n-01 00:00:00', mktime(0, 0, 0,$month + $count, 1, $year));
@@ -217,28 +219,37 @@ function schedulesGet($year, $month, $calendar_number){
         die(mysqli_conect_error());
     }
     //SQLの判断
-    switch ($_POST['command']) {
-        case 'update':
-            $command = sprintf('UPDATE cal_schedules SET schedule_title = "%s", schedule_plan = "%s", schedule_start = "%s", schedule_end = "%s", created_at = created_at, update_at = NOW() WHERE schedule_id = %d', $_POST['sch_title'], $_POST['sch_plan'], $_POST['sch_start'], $_POST['sch_end'], $_POST['sch_id']);
-            break;
-        case 'insert':
-            $command = sprintf('INSERT INTO cal_schedules (schedule_title, schedule_plan, schedule_start, schedule_end, update_at) VALUES ("%s", "%s", "%s", "%s", NOW())', $_POST['sch_title'], $_POST['sch_plan'], $_POST['sch_start'], $_POST['sch_end']);
-            break;
-        case 'delete';
-            $command = sprintf('UPDATE cal_schedules SET  created_at = created_at, deleted_at = NOW() WHERE schedule_id = "%d"', $_POST['sch_id']);
-
+    // switch ($_POST['command']) {
+    //     case 'update':
+    //         $command = sprintf('UPDATE cal_schedules SET schedule_title = "%s", schedule_plan = "%s", schedule_start = "%s", schedule_end = "%s", created_at = created_at, update_at = NOW() WHERE schedule_id = %d', $_POST['sch_title'], $_POST['sch_plan'], $_POST['sch_start'], $_POST['sch_end'], $_POST['sch_id']);
+    //         break;
+    //     case 'insert':
+    //         $command = sprintf('INSERT INTO cal_schedules (schedule_title, schedule_plan, schedule_start, schedule_end, update_at) VALUES ("%s", "%s", "%s", "%s", NOW())', $_POST['sch_title'], $_POST['sch_plan'], $_POST['sch_start'], $_POST['sch_end']);
+    //         break;
+    //     case 'delete';
+    //         $command = sprintf('UPDATE cal_schedules SET  created_at = created_at, deleted_at = NOW() WHERE schedule_id = "%d"', $_POST['sch_id']);
+    if (isset($_POST['command'])) {
+        switch ($_POST['command']) {
+            case 'update':
+                $command = sprintf('UPDATE cal_schedules SET schedule_title = "%s", schedule_plan = "%s", schedule_start = "%s", schedule_end = "%s", created_at = created_at, update_at = NOW() WHERE schedule_id = %d', $_SESSION['sch_title'], $_SESSION['sch_plan'], $_SESSION['sch_start'], $_SESSION['sch_end'], $_SESSION['sch_id']);
+                break;
+            case 'insert':
+                $command = sprintf('INSERT INTO cal_schedules (schedule_title, schedule_plan, schedule_start, schedule_end, update_at) VALUES ("%s", "%s", "%s", "%s", NOW())', $_SESSION['sch_title'], $_SESSION['sch_plan'], $_SESSION['sch_start'], $_SESSION['sch_end']);
+                break;
+            case 'delete';
+                $command = sprintf('UPDATE cal_schedules SET  created_at = created_at, deleted_at = NOW() WHERE schedule_id = "%d"', $_SESSION['sch_id']);
+        }
+        // if (isset($_POST['sch_id'])) {
+        //     $insert = sprintf('UPDATE cal_schedules SET schedule_title = "%s", schedule_plan = "%s", schedule_start = "%s", schedule_end = "%s", update_at = NOW() WHERE schedule_id = %d', $_POST['sch_title'], $_POST['sch_plan'], $_POST['sch_start'], $_POST['sch_end'], $_POST['sch_id']);
+        // } else {
+        //     $insert = sprintf('INSERT INTO cal_schedules (schedule_title, schedule_plan, schedule_start, schedule_end, update_at) VALUES ("%s", "%s", "%s", "%s", NOW())', $_POST['sch_title'], $_POST['sch_plan'], $_POST['sch_start'], $_POST['sch_end']);
+        // }
+        //SQL実行
+        if ($result = mysqli_query($link, $command)) {
+        } else {
+            echo "失敗！";
+        }
     }
-    // if (isset($_POST['sch_id'])) {
-    //     $insert = sprintf('UPDATE cal_schedules SET schedule_title = "%s", schedule_plan = "%s", schedule_start = "%s", schedule_end = "%s", update_at = NOW() WHERE schedule_id = %d', $_POST['sch_title'], $_POST['sch_plan'], $_POST['sch_start'], $_POST['sch_end'], $_POST['sch_id']);
-    // } else {
-    //     $insert = sprintf('INSERT INTO cal_schedules (schedule_title, schedule_plan, schedule_start, schedule_end, update_at) VALUES ("%s", "%s", "%s", "%s", NOW())', $_POST['sch_title'], $_POST['sch_plan'], $_POST['sch_start'], $_POST['sch_end']);
-    // }
-    //SQL実行
-    if ($result = mysqli_query($link, $command)) {
-    } else {
-        echo "失敗！";
-    }
-
     //SQL該当月予定取得
     $select = sprintf('SELECT * FROM cal_schedules WHERE deleted_at IS NULL AND schedule_start BETWEEN "%s" AND "%s"', $start_date, $finish_date);
     //mysqli_queryに配列がかえるかfalseがかえる
@@ -255,10 +266,11 @@ function schedulesGet($year, $month, $calendar_number){
     }
 
     mysqli_close($link);
-
+    $_SESSION = array();
     return $schedule;
-}
 
+}
+//SESSION初期化
 $schedule = schedulesGet($this_year, $this_month, $calendar_number);
 ?>
 
