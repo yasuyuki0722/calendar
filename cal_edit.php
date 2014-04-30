@@ -1,6 +1,5 @@
 <?php
 date_default_timezone_get('Asia/Tolyo');
-
 $year_month_day = isset($_GET['y_m_d']) ? $_GET['y_m_d'] : date('Y-n-d');
 $timestamp  = strtotime($year_month_day); 
 if ($timestamp === false) {
@@ -9,14 +8,14 @@ if ($timestamp === false) {
 
 $schedule_id = isset($_GET['id']) ? $_GET['id']: NULL;
 
-
-
 $url = 'localhost';
 $user = 'root';
 $pass  ='';
 $db = 'calendar';
 
+//$schedule_idの有無をチェック
 if (isset($schedule_id)) {
+    //$schedule_idに対応する予定をDBからSELECT
     //MySQLに接続
     $link = mysqli_connect($url, $user, $pass, $db);
 
@@ -40,9 +39,9 @@ if (isset($schedule_id)) {
     } else {
         echo "失敗！";
     }
-
     mysqli_close($link);
 } else {
+    //$schedule_idがない場合はGETで受け取った日付を入れる
     $sch_detail['start'] = $year_month_day;
     $sch_detail['end'] = $year_month_day;
     $sch_detail['title'] = null;
@@ -59,7 +58,7 @@ if (isset($schedule_id)) {
 </head>
 <body>
 <h1>予定編集画面</h1>
-<form action="cal_edit_comp.php" method="POST">
+<form action="index2.php" method="POST">
     <dl>
         <dt>
             予定開始日
@@ -87,12 +86,22 @@ if (isset($schedule_id)) {
             <input type="textarea" name="sch_plan" value="<?php echo $sch_detail['plan'];?>">
         </dd>
     </dl>
-    <input type="hidden" name="sch_id" value="<?php echo $schedule_id ;?>">
-    <input type="submit" value="更新">
+
+<!-- $schedule_isの有無で更新か登録をcheck -->
+    <?php if (isset($schedule_id)) :?>
+        <input type="hidden" name="sch_id" value="<?php echo $schedule_id ;?>">
+        <input type="hidden" name="command" value="update">
+        <input type="submit" value="更新">
+    <?php else:?>
+        <input type="submit" value="登録">
+        <input type="hidden" name="command" value="insert">
+    <?php endif;?>
 </form>
 
-<form action="cal_del.php" method="POST">
+<!-- 削除の場合 -->
+<form action="index2.php" method="POST">
     <input type="hidden" name="sch_id" value="<?php echo $schedule_id ;?>">
+    <input type="hidden" name="command" value="delete">
     <input type="submit" value="削除">
 </form>
 </body>

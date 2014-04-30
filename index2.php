@@ -1,4 +1,3 @@
-
 <?php
 $cal_regi_link = 'http://192.168.33.10/calendar/cal_edit.php?y_m_d=';
 
@@ -217,9 +216,31 @@ function schedulesGet($year, $month, $calendar_number){
     if (mysqli_connect_errno()) {
         die(mysqli_conect_error());
     }
+    //SQLの判断
+    switch ($_POST['command']) {
+        case 'update':
+            $command = sprintf('UPDATE cal_schedules SET schedule_title = "%s", schedule_plan = "%s", schedule_start = "%s", schedule_end = "%s", created_at = created_at, update_at = NOW() WHERE schedule_id = %d', $_POST['sch_title'], $_POST['sch_plan'], $_POST['sch_start'], $_POST['sch_end'], $_POST['sch_id']);
+            break;
+        case 'insert':
+            $command = sprintf('INSERT INTO cal_schedules (schedule_title, schedule_plan, schedule_start, schedule_end, update_at) VALUES ("%s", "%s", "%s", "%s", NOW())', $_POST['sch_title'], $_POST['sch_plan'], $_POST['sch_start'], $_POST['sch_end']);
+            break;
+        case 'delete';
+            $command = sprintf('UPDATE cal_schedules SET  created_at = created_at, deleted_at = NOW() WHERE schedule_id = "%d"', $_POST['sch_id']);
 
+    }
+    // if (isset($_POST['sch_id'])) {
+    //     $insert = sprintf('UPDATE cal_schedules SET schedule_title = "%s", schedule_plan = "%s", schedule_start = "%s", schedule_end = "%s", update_at = NOW() WHERE schedule_id = %d', $_POST['sch_title'], $_POST['sch_plan'], $_POST['sch_start'], $_POST['sch_end'], $_POST['sch_id']);
+    // } else {
+    //     $insert = sprintf('INSERT INTO cal_schedules (schedule_title, schedule_plan, schedule_start, schedule_end, update_at) VALUES ("%s", "%s", "%s", "%s", NOW())', $_POST['sch_title'], $_POST['sch_plan'], $_POST['sch_start'], $_POST['sch_end']);
+    // }
+    //SQL実行
+    if ($result = mysqli_query($link, $command)) {
+    } else {
+        echo "失敗！";
+    }
+
+    //SQL該当月予定取得
     $select = sprintf('SELECT * FROM cal_schedules WHERE deleted_at IS NULL AND schedule_start BETWEEN "%s" AND "%s"', $start_date, $finish_date);
-
     //mysqli_queryに配列がかえるかfalseがかえる
     if ($result = mysqli_query($link, $select)) {
         while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
@@ -238,9 +259,7 @@ function schedulesGet($year, $month, $calendar_number){
     return $schedule;
 }
 
-$schedule = schedulesGet($this_year,$this_month,$calendar_number);
-//var_dump($schedule);exit();
-
+$schedule = schedulesGet($this_year, $this_month, $calendar_number);
 ?>
 
 
