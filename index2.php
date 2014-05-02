@@ -3,7 +3,6 @@ session_start();
 $cal_regi_link = 'http://192.168.33.10/calendar/cal_edit.php?';
 
 date_default_timezone_get('Asia/Tolyo');
-
 //$_getで取得
 $year_month = isset($_GET['year_month']) ? $_GET['year_month'] : date('Y-n');
 $timestamp  = strtotime($year_month.'-1'); 
@@ -227,8 +226,8 @@ function schedulesGet($year, $month, $calendar_number){
     //         break;
     //     case 'delete';
     //         $command = sprintf('UPDATE cal_schedules SET  created_at = created_at, deleted_at = NOW() WHERE schedule_id = "%d"', $_POST['sch_id']);
-    if (isset($_POST['command'])) {
-        switch ($_POST['command']) {
+    if (isset($_SESSION['command'])) {
+        switch ($_SESSION['command']) {
             case 'update':
                 $command = sprintf('UPDATE cal_schedules SET schedule_title = "%s", schedule_plan = "%s", schedule_start = "%s", schedule_end = "%s", created_at = created_at, update_at = NOW() WHERE schedule_id = %d', $_SESSION['sch_title'], $_SESSION['sch_plan'], $_SESSION['sch_start'], $_SESSION['sch_end'], $_SESSION['sch_id']);
                 break;
@@ -246,11 +245,11 @@ function schedulesGet($year, $month, $calendar_number){
         //SQL実行
         if ($result = mysqli_query($link, $command)) {
         } else {
-            echo "失敗！";
+            echo "失敗";
         }
     }
     //SQL該当月予定取得
-    $select = sprintf('SELECT * FROM cal_schedules WHERE deleted_at IS NULL AND schedule_start BETWEEN "%s" AND "%s"', $start_date, $finish_date);
+    $select = sprintf('SELECT * FROM cal_schedules WHERE deleted_at IS NULL AND ((schedule_start BETWEEN "%s" AND "%s") OR (schedule_end BETWEEN "%s" AND "%s"))', $start_date, $finish_date, $start_date, $finish_date);
     //mysqli_queryに配列がかえるかfalseがかえる
     if ($result = mysqli_query($link, $select)) {
         while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
@@ -273,7 +272,6 @@ function schedulesGet($year, $month, $calendar_number){
         echo "失敗！";
     }
     mysqli_close($link);
-
     //SESSION初期化
     $_SESSION = array();
     return $schedule;
