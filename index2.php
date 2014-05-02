@@ -1,6 +1,6 @@
 <?php
 session_start();
-$cal_regi_link = 'http://192.168.33.10/calendar/cal_edit.php?y_m_d=';
+$cal_regi_link = 'http://192.168.33.10/calendar/cal_edit.php?';
 
 date_default_timezone_get('Asia/Tolyo');
 
@@ -197,7 +197,6 @@ function aucColum() {
  *
  */
 function schedulesGet($year, $month, $calendar_number){
-            global $_SESSION;
 
     $count = -floor($calendar_number/2);
     //予定取得開始日
@@ -255,23 +254,33 @@ function schedulesGet($year, $month, $calendar_number){
     //mysqli_queryに配列がかえるかfalseがかえる
     if ($result = mysqli_query($link, $select)) {
         while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-            list($sch_y, $sch_m, $sch_d) = explode('-', date('Y-n-j',strtotime($row['schedule_start'])));
-            //$schedule[$sch_y][$sch_m][$sch_d][$row['schedule_title']] = array('plan' => $row['schedule_plan']);
-            $schedule[$sch_y][$sch_m][$sch_d][$row['schedule_id']]['title'] = $row['schedule_title'];
-            $schedule[$sch_y][$sch_m][$sch_d][$row['schedule_id']]['plan'] = $row['schedule_plan'];
+            //予定開始日と予定終了日の差を計算
+            list($sch_st_y, $sch_st_m, $sch_st_d) = explode('-', date('Y-n-j',strtotime($row['schedule_start'])));
+            list($sch_ed_y, $sch_ed_m, $sch_ed_d) = explode('-', date('Y-n-j',strtotime($row['schedule_end'])));
+            $sch_count_day = (strtotime($sch_ed_y.'-'.$sch_ed_m.'-'.$sch_ed_d) - strtotime($sch_st_y.'-'.$sch_st_m.'-'.$sch_st_d)) / 86400 ;
+            //予定の日数分forでまわす
+            for ($i = 0; $i <= $sch_count_day ; $i++) { 
+                list($sch_y, $sch_m, $sch_d) = explode('-', date('Y-n-j', mktime(0, 0, 0, $sch_st_m, $sch_st_d + $i, $sch_st_y)));
+                $schedule[$sch_y][$sch_m][$sch_d][$row['schedule_id']]['title'] = $row['schedule_title'];
+                $schedule[$sch_y][$sch_m][$sch_d][$row['schedule_id']]['plan'] = $row['schedule_plan'];
+            }
+            // list($sch_y, $sch_m, $sch_d) = explode('-', date('Y-n-j',strtotime($row['schedule_start'])));
+            // $schedule[$sch_y][$sch_m][$sch_d][$row['schedule_id']]['title'] = $row['schedule_title'];
+            // $schedule[$sch_y][$sch_m][$sch_d][$row['schedule_id']]['plan'] = $row['schedule_plan'];
         }
         mysqli_free_result($result);
     } else {
         echo "失敗！";
     }
-
     mysqli_close($link);
+
+    //SESSION初期化
     $_SESSION = array();
     return $schedule;
-
 }
-//SESSION初期化
+
 $schedule = schedulesGet($this_year, $this_month, $calendar_number);
+
 ?>
 
 
@@ -348,7 +357,7 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
                             <?php if (isset($day) == false) :?>
                                 <?php echo '';?>
                             <?php else :?>
-                                <a href="<?php echo $cal_regi_link.$year.'-'.$month.'-'.$day;?> " > <?php echo $day;?> </a>
+                                <a href="<?php echo $cal_regi_link.'sch_y='.$year.'&amp;sch_m='.$month.'&amp;sch_d='.$day;?> " > <?php echo $day;?> </a>
                             <?php endif ?>
                         </div>
 
@@ -368,7 +377,7 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
                         <div class="scheduleInfo">
                         <?php if (isset($schedule[$year][$month][$day])):?>
                         <?php foreach ($schedule[$year][$month][$day] as $key => $value) :?> 
-                            <a href="<?php echo 'cal_edit.php?y_m_d='.$year.'-'.$month.'-'.$day.'&amp;id='.$key ;?>" title = '<?php echo $value['plan'];?>'> <?php echo '-'.$value['title'];?> <br> </a>
+                            <a href="<?php echo 'cal_edit.php?sch_y='.$year.'&amp;sch_m='.$month.'&amp;sch_d='.$day.'&amp;sch_id='.$key ;?>" title = '<?php echo $value['plan'];?>'> <?php echo '-'.$value['title'];?><br></a>
                         <?php endforeach;?>
                         <?php endif ;?>
                         </div>
