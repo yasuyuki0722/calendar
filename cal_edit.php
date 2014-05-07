@@ -30,10 +30,12 @@ if (empty($_SESSION['flg'])) {
         if ($result = mysqli_query($link, $select)) {
             while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
                 $_SESSION['sch_id'] = $sch_id;
-                list($_SESSION['sch_st_y'], $_SESSION['sch_st_m'], $_SESSION['sch_st_d']) = explode('-', date('Y-n-j', strtotime($row['schedule_start'])));
-                list($_SESSION['sch_ed_y'], $_SESSION['sch_ed_m'], $_SESSION['sch_ed_d']) = explode('-', date('Y-n-j', strtotime($row['schedule_end'])));
+                $_SESSION['sch_start'] = date('Y-n-j-H-i', strtotime($row['schedule_start']));
+                $_SESSION['sch_end']   = date('Y-n-j-H-i', strtotime($row['schedule_end']));
+                list($_SESSION['sch_st_y'], $_SESSION['sch_st_m'], $_SESSION['sch_st_d'], $_SESSION['sch_st_h'], $_SESSION['sch_st_i']) = explode('-', $_SESSION['sch_start']);
+                list($_SESSION['sch_ed_y'], $_SESSION['sch_ed_m'], $_SESSION['sch_ed_d'], $_SESSION['sch_ed_h'], $_SESSION['sch_ed_i']) = explode('-', $_SESSION['sch_end']);
                 $_SESSION['sch_title'] = $row['schedule_title'];
-                $_SESSION['sch_plan'] = $row['schedule_plan'];
+                $_SESSION['sch_plan']  = $row['schedule_plan'];
             }
             mysqli_free_result($result);
         } else {
@@ -46,8 +48,15 @@ if (empty($_SESSION['flg'])) {
         $_SESSION['sch_st_y']  = $_SESSION['sch_ed_y'] = $sch_y;
         $_SESSION['sch_st_m']  = $_SESSION['sch_ed_m'] = $sch_m;
         $_SESSION['sch_st_d']  = $_SESSION['sch_ed_d'] = $sch_d;
+        $_SESSION['sch_st_h']  = 0;
+        $_SESSION['sch_st_i']  = 0;
+        $_SESSION['sch_ed_h']  = 0;
+        $_SESSION['sch_ed_i']  = 0;
         $_SESSION['sch_title'] = '無題の予定';
         $_SESSION['sch_plan']  = '内容がないよ';
+        $_SESSION['sch_start'] = $_SESSION['sch_st_y'].'-'.$_SESSION['sch_st_m'].'-'.$_SESSION['sch_st_d'].'-'.$_SESSION['sch_st_h'].'-'.$_SESSION['sch_st_i'];
+        $_SESSION['sch_end']   = $_SESSION['sch_ed_y'].'-'.$_SESSION['sch_ed_m'].'-'.$_SESSION['sch_ed_d'].'-'.$_SESSION['sch_ed_h'].'-'.$_SESSION['sch_ed_i'];
+ 
     }
 
 //flgがたってるとき
@@ -62,10 +71,17 @@ if (empty($_SESSION['flg'])) {
     if (isset($_POST['start_y_m'])) {
         list($_SESSION['sch_st_y'], $_SESSION['sch_st_m']) = explode('-', $_POST['start_y_m']);
         list($_SESSION['sch_ed_y'], $_SESSION['sch_ed_m']) = explode('-', $_POST['end_y_m']);
-        $_SESSION['sch_st_d'] = $_POST['start_d'];
-        $_SESSION['sch_ed_d'] = $_POST['end_d'];
+        $_SESSION['sch_st_d']  = $_POST['start_d'];
+        $_SESSION['sch_ed_d']  = $_POST['end_d'];
+        $_SESSION['sch_st_h']  = $_POST['start_h'];
+        $_SESSION['sch_st_i']  = $_POST['start_i'];
+        $_SESSION['sch_ed_h']  = $_POST['end_h'];
+        $_SESSION['sch_ed_i']  = $_POST['end_i'];
         $_SESSION['sch_title'] = $_POST['sch_title'];
-        $_SESSION['sch_plan'] = $_POST['sch_plan'];
+        $_SESSION['sch_plan']  = $_POST['sch_plan'];
+        $_SESSION['sch_start'] = $_SESSION['sch_st_y'].'-'.$_SESSION['sch_st_m'].'-'.$_SESSION['sch_st_d'].'-'.$_SESSION['sch_st_h'].'-'.$_SESSION['sch_st_i'];
+        $_SESSION['sch_end']   = $_SESSION['sch_ed_y'].'-'.$_SESSION['sch_ed_m'].'-'.$_SESSION['sch_ed_d'].'-'.$_SESSION['sch_ed_h'].'-'.$_SESSION['sch_ed_i'];
+ 
     }
 
     //確認
@@ -75,7 +91,10 @@ if (empty($_SESSION['flg'])) {
         $error_msg = array();
 
         //エラーチェック
-        if (strtotime($_SESSION['sch_st_y'].'-'.$_SESSION['sch_st_m'].'-'.$_SESSION['sch_st_d']) > strtotime($_SESSION['sch_ed_y'].'-'.$_SESSION['sch_ed_m'].'-'.$_SESSION['sch_ed_d'])) {
+        var_dump(strtotime($_SESSION['sch_start']));
+        var_dump(strtotime($_SESSION['sch_end']));
+         //if (strtotime($_SESSION['sch_st_y'].'-'.$_SESSION['sch_st_m'].'-'.$_SESSION['sch_st_d']) > strtotime($_SESSION['sch_ed_y'].'-'.$_SESSION['sch_ed_m'].'-'.$_SESSION['sch_ed_d'])) {
+        if (strtotime($_SESSION['sch_start']) > strtotime($_SESSION['sch_end'])) {
             $error_msg['date'] = '日時を正しく入力してください';
         }
         if ($_SESSION['sch_title'] == '') {
@@ -102,7 +121,7 @@ $k = 0;
 $sch_y_m = array();
 for ($i = -1; $i <= 1; $i++) { 
     for ($j=1; $j <= 12; $j++) { 
-        $sch_y_m[$k]['year'] = date('Y', mktime(0, 0, 0, $j, 1, $_SESSION['sch_st_y'] + $i));
+        $sch_y_m[$k]['year']  = date('Y', mktime(0, 0, 0, $j, 1, $_SESSION['sch_st_y'] + $i));
         $sch_y_m[$k]['month'] = date('n', mktime(0, 0, 0, $j, 1, $_SESSION['sch_st_y'] + $i));
         $k++;
     }
@@ -226,7 +245,7 @@ function h($text){
     <input type="submit" name="submit" value="削除">
 </form>
 
-<a href="index2.php"> カレンダーに戻る </a>
+<a href="index2.php?year_month=<?php echo $_SESSION['sch_st_y'].'-'.$_SESSION['sch_st_m'];?>"> カレンダーに戻る </a>
 
 </body>
 </html>

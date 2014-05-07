@@ -226,7 +226,7 @@ function schedulesGet($year, $month, $calendar_number){
     //         break;
     //     case 'delete';
     //         $command = sprintf('UPDATE cal_schedules SET  created_at = created_at, deleted_at = NOW() WHERE schedule_id = "%d"', $_POST['sch_id']);
-    if (isset($_SESSION['command'])) {
+    if ($_POST['submit'] == '保存') {
         switch ($_SESSION['command']) {
             case 'update':
                 $command = sprintf('UPDATE cal_schedules SET schedule_title = "%s", schedule_plan = "%s", schedule_start = "%s", schedule_end = "%s", created_at = created_at, update_at = NOW() WHERE schedule_id = %d', $_SESSION['sch_title'], $_SESSION['sch_plan'], $_SESSION['sch_start'], $_SESSION['sch_end'], $_SESSION['sch_id']);
@@ -235,18 +235,16 @@ function schedulesGet($year, $month, $calendar_number){
                 $command = sprintf('INSERT INTO cal_schedules (schedule_title, schedule_plan, schedule_start, schedule_end, update_at) VALUES ("%s", "%s", "%s", "%s", NOW())', $_SESSION['sch_title'], $_SESSION['sch_plan'], $_SESSION['sch_start'], $_SESSION['sch_end']);
                 break;
             case 'delete';
-                $command = sprintf('UPDATE cal_schedules SET  created_at = created_at, deleted_at = NOW() WHERE schedule_id = "%d"', $_SESSION['sch_id']);
-        }
-        // if (isset($_POST['sch_id'])) {
-        //     $insert = sprintf('UPDATE cal_schedules SET schedule_title = "%s", schedule_plan = "%s", schedule_start = "%s", schedule_end = "%s", update_at = NOW() WHERE schedule_id = %d', $_POST['sch_title'], $_POST['sch_plan'], $_POST['sch_start'], $_POST['sch_end'], $_POST['sch_id']);
-        // } else {
-        //     $insert = sprintf('INSERT INTO cal_schedules (schedule_title, schedule_plan, schedule_start, schedule_end, update_at) VALUES ("%s", "%s", "%s", "%s", NOW())', $_POST['sch_title'], $_POST['sch_plan'], $_POST['sch_start'], $_POST['sch_end']);
-        // }
-        //SQL実行
-        if ($result = mysqli_query($link, $command)) {
-        } else {
-            echo "失敗";
-        }
+                $command = sprintf('UPDATE cal_schedules SET  created_at = created_at, update_at = NOW(), deleted_at = NOW() WHERE schedule_id = "%d"', $_SESSION['sch_id']);
+            }
+
+            //SQL実行
+            if (isset($command)) {
+                if ($result = mysqli_query($link, $command)) {
+                } else {
+                    echo "失敗";
+                }
+            }
     }
     //SQL該当月予定取得
     $select = sprintf('SELECT * FROM cal_schedules WHERE deleted_at IS NULL AND ((schedule_start BETWEEN "%s" AND "%s") OR (schedule_end BETWEEN "%s" AND "%s"))', $start_date, $finish_date, $start_date, $finish_date);
@@ -274,8 +272,17 @@ function schedulesGet($year, $month, $calendar_number){
     mysqli_close($link);
     //SESSION初期化
     $_SESSION = array();
+    if (isset($_COOKIE[session_name()])) {
+        setcookie(session_name(), '', time() - 42000, '/');
+    }
+    session_destroy();
     return $schedule;
 }
+
+function h($text){
+    return htmlspecialchars($text);
+}
+
 
 $schedule = schedulesGet($this_year, $this_month, $calendar_number);
 
@@ -375,7 +382,7 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
                         <div class="scheduleInfo">
                         <?php if (isset($schedule[$year][$month][$day])):?>
                         <?php foreach ($schedule[$year][$month][$day] as $key => $value) :?> 
-                            <a href="<?php echo 'cal_edit.php?sch_y='.$year.'&amp;sch_m='.$month.'&amp;sch_d='.$day.'&amp;sch_id='.$key ;?>" title = '<?php echo $value['plan'];?>'> <?php echo '-'.$value['title'];?><br></a>
+                            <a href="<?php echo 'cal_edit.php?sch_y='.$year.'&amp;sch_m='.$month.'&amp;sch_d='.$day.'&amp;sch_id='.$key ;?>" title = '<?php echo h($value['plan']);?>'> <?php echo '-'.h($value['title']);?><br></a>
                         <?php endforeach;?>
                         <?php endif ;?>
                         </div>

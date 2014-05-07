@@ -1,7 +1,8 @@
 <?php
+session_cache_limiter(none);
 session_start();
-$_SESSION['sch_start'] = $_SESSION['sch_st_y'].'-'.$_SESSION['sch_st_m'].'-'.$_SESSION['sch_st_d'];
-$_SESSION['sch_end']   = $_SESSION['sch_ed_y'].'-'.$_SESSION['sch_ed_m'].'-'.$_SESSION['sch_ed_d'];
+// $_SESSION['sch_start'] = $_SESSION['sch_st_y'].'-'.$_SESSION['sch_st_m'].'-'.$_SESSION['sch_st_d'].'-'.$_SESSION['sch_st_h'].'-'.$_SESSION['sch_st_i'];
+// $_SESSION['sch_end']   = $_SESSION['sch_ed_y'].'-'.$_SESSION['sch_ed_m'].'-'.$_SESSION['sch_ed_d'].'-'.$_SESSION['sch_ed_h'].'-'.$_SESSION['sch_ed_i'];
 
 function h($text){
     return htmlspecialchars($text);
@@ -28,13 +29,13 @@ function h($text){
         予定開始日
     </dt>
     <dd>
-        <?php echo $_SESSION['sch_st_y'].'年'.$_SESSION['sch_st_m'].'月'.$_SESSION['sch_st_d'].'日';?>
+        <?php echo $_SESSION['sch_st_y'].'年'.$_SESSION['sch_st_m'].'月'.$_SESSION['sch_st_d'].'日  '.$_SESSION['sch_st_h'].'時'.$_SESSION['sch_st_i'].'分';?>
     </dd>
     <dt>
         予定終了日
     </dt>
     <dd>
-        <?php echo $_SESSION['sch_ed_y'].'年'.$_SESSION['sch_ed_m'].'月'.$_SESSION['sch_ed_d'].'日';?>
+        <?php echo $_SESSION['sch_ed_y'].'年'.$_SESSION['sch_ed_m'].'月'.$_SESSION['sch_ed_d'].'日  '.$_SESSION['sch_ed_h'].'時'.$_SESSION['sch_ed_i'].'分';?>
     </dd>
     <dt>
         タイトル
@@ -49,7 +50,9 @@ function h($text){
         <?php echo h($_SESSION['sch_plan']);?>
     </dd>
 </dl>
-<a href="index2.php">保存する</a>
+<form action="index2.php?year_month=<?php echo $_SESSION['sch_st_y'].'-'.$_SESSION['sch_st_m'];?>" method="POST">
+    <input type="submit" name="submit" value="保存">
+</form>
 <a href="cal_edit.php">戻る</a>
 </body>
 </html>
