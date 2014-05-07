@@ -23,16 +23,25 @@ a:visited{
     display: inline-block;
 }
 
-th,td{
+td{
     padding: 8px;
     border 1px solid #ccc;
     text-align:center;
     vertical-align: top;
     width: 70px;
     height: 50px;
+    max-height: 50px;
+    overflow: auto;
+    display: inline-block;
 }
 
-th {
+
+th{
+    padding: 8px;
+    border 1px solid #ccc;
+    text-align:center;
+    vertical-align: top;
+    width: 70px;
     background: #eee;
     height: 20px;
 }
@@ -81,6 +90,6 @@ th {
     font-size: 10px;
     background-color: lightgoldenrodyellow;
     white-space: nowrap;
-    overflow: scroll;
+    overflow: hidden;
     text-overflow: ellipsis;
 }

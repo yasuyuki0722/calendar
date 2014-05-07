@@ -1,4 +1,5 @@
 <?php
+session_cache_limiter(none);
 session_start();
 $cal_regi_link = 'http://192.168.33.10/calendar/cal_edit.php?';
 
@@ -15,7 +16,7 @@ if ($timestamp === false) {
 $calendar_number = 3;
 
 //曜日設定
-$weekday_index = array('月','火','水','木','金','土','日');
+$weekday_index = array('日','月','火','水','木','金','土');
 
 //当月、先月、来月日付取得
 list($today_y,$today_m,$today_d) = explode('-', date('Y-n-j',strtotime('Now')));
@@ -374,15 +375,16 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
         <tbody>
         <!-- 曜日情報 -->
             <tr>
-            <?php for ($i=0; $i <= 6; $i++) :?>
+            <?php for ($i = 0; $i <= 6; $i++) :?>
+                <?php// $j = ($i + 6) % 7;?>
                 <td style='height: 20px'> <?php echo $weekday_index[$i];?> </td>
             <?php endfor ?>
             </tr>
 
             <?php for ($j = 0; $j < count($week[$year][$month]);$j ++):?>
             <tr>
-                <?php for ($i=0; $i <= 6; $i++):?>
-                    <?php //$i = ($i + 1)%7 mod7で折り返したい;?>
+                <?php for ($i = 0; $i <= 6; $i++):?>
+                    <?php// $i = ($i + 6) % 7 ;//mod7で折り返したい?>
                     <?php $day = $week[$year][$month][$j][$i];?>
                     <td class='<?php echo $day_class[$year][$month][$j][$i]['W'];?>'>
 
