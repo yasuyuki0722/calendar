@@ -2,10 +2,20 @@
 body{
     text-align: center;
     margin: 0 auto;
+/*    font-family:HelveticaNeue-LightItalic;*/
 }
 
 a{
+    color: black;
     text-decoration: none;
+}
+
+a:link{
+    color: black;
+}
+
+a:visited{
+    color: black;
 }
 
 .calendar{
@@ -39,6 +49,13 @@ th {
     background-color: lime;
 }
 
+.not{
+    background: #f3f3f2;/*白鼠*/
+    font-weight: lighter;
+    font-style: oblique; 
+    font-size: 60%;
+}
+
 .weekday_holiday {
     color: red;
 }
@@ -62,7 +79,7 @@ th {
     text-align: left;
     width: 70px;
     font-size: 10px;
-    background-color: lightgoldenrodyellow  ;
+    background-color: lightgoldenrodyellow;
     white-space: nowrap;
     overflow: scroll;
     text-overflow: ellipsis;

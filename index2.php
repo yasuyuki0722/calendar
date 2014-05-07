@@ -56,13 +56,23 @@ $auc_colum = aucColum();
  */
 function calendar($year, $month, $holidays){
     //今月の最後の日
-    $lastday = date('t',mktime(0, 0, 0, $month, 1, $year));
+    $lastday = date('t', mktime(0, 0, 0, $month, 1, $year));
 
     //今月の最初の曜日(0 ~ 6)から始める
     $weekday_count = date("w",mktime(0, 0, 0, $month, 1, $year));
 
     //$weekに日付を代入
     $week_number = 0;
+
+    //前月の日付を入れる
+    //list($last_y, $last_m, $last_d) = explode('-', date('Y-n-t', mktime(0, 0, 0, $month - 1, 1, $year)));
+    $last_d = date('t', mktime(0, 0, 0, $month - 1, 1, $year));
+    for ($i = 0; $i < $weekday_count; $i++) { 
+        $week[$year][$month][$week_number][$i] = $last_d - ($weekday_count - $i -1);
+        $day_class[$year][$month][$week_number][$i]['W'] = 'not';
+
+    }
+
     for ($i = 1; $i <= $lastday; $i++) {
         //何年、何月、何週目、何曜日＝＞何日
         $week[$year][$month][$week_number][$weekday_count] = $i;
@@ -72,26 +82,26 @@ function calendar($year, $month, $holidays){
         //土、日の判断
         switch ($weekday_count) {
             case 0:
-                $day_class[$year][$month][$i]['W'] = 'Sun';
+                $day_class[$year][$month][$week_number][$weekday_count]['W'] = 'Sun';
                 break;
             
             case 6:
-                $day_class[$year][$month][$i]['W'] = 'Sat';
+                $day_class[$year][$month][$week_number][$weekday_count]['W'] = 'Sat';
                 break;
         }
 
         //祝日は日曜日と同じclass
         if (isset($holidays[$year][$month][$i])) {
-            $day_class[$year][$month][$i]['W'] = 'Sun';
+            $day_class[$year][$month][$week_number][$weekday_count]['W'] = 'Sun';
         }
 
         //今日判断
         list($today_y,$today_m,$today_d) = explode('-', date('Y-n-j',strtotime('Now')));
 
         if ($year == $today_y && $month == $today_m && $i == $today_d) {
-            $day_class[$year][$month][$i]['Today'] = 'today';
+            $day_class[$year][$month][$week_number][$weekday_count]['Today'] = 'today';
         }else{
-            $day_class[$year][$month][$i]['Today'] = ' '; //array('Today' => ' ');
+            $day_class[$year][$month][$week_number][$weekday_count]['Today'] = ' '; //array('Today' => ' ');
         }
 
         $weekday_count++;
@@ -101,6 +111,20 @@ function calendar($year, $month, $holidays){
         }
 
     }
+
+    //来月の日付を入れる
+    //list($next_y, $next_m, $next_d) = explode('-', date('Y-n-t', mktime(0, 0, 0, $month + 1, 1, $year)));
+    //$next_d = date('Y-n-t', mktime(0, 0, 0, $month + 1, 1, $year));
+    if ($weekday_count != 0) {
+        $next_d = 1;
+        for ($i = $weekday_count; $i < 7; $i++) { 
+            $week[$year][$month][$week_number][$i] = $next_d;
+            $day_class[$year][$month][$week_number][$i]['W'] = 'not';
+
+            $next_d++;
+        }
+    }
+
     return array(
         'week' => $week,
         'year' => $year,
@@ -286,6 +310,11 @@ function h($text){
 
 $schedule = schedulesGet($this_year, $this_month, $calendar_number);
 
+// var_dump($calendar_make);
+
+
+// exit();
+
 ?>
 
 
@@ -354,11 +383,11 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
             <tr>
                 <?php for ($i=0; $i <= 6; $i++):?>
                     <?php //$i = ($i + 1)%7 mod7で折り返したい;?>
-                    <?php $day = $week[$year][$month][$j][$i]?>
-                    <td class='<?php echo $day_class[$year][$month][$day]['W'];?>'>
+                    <?php $day = $week[$year][$month][$j][$i];?>
+                    <td class='<?php echo $day_class[$year][$month][$j][$i]['W'];?>'>
 
                         <!-- 日付情報 -->
-                        <div class='<?php echo $day_class[$year][$month][$day]['Today'];?>'>
+                        <div class='<?php echo $day_class[$year][$month][$j][$i]['Today'];?>'>
                             <?php if (isset($day) == false) :?>
                                 <?php echo '';?>
                             <?php else :?>
@@ -373,18 +402,22 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
 
                         <!-- オークションコラム -->
                         <div class='aucColumInfo'>
+                        <?php if ($day_class[$year][$month][$j][$i]['W'] != 'not') :?>
                             <a href=" <?php echo $auc_colum[$year][$month][$day]['link'];?> " title = '<?php echo $auc_colum[$year][$month][$day]['title'];?>' >
-                            <?php echo $auc_colum[$year][$month][$day]['title'];?>
+                                <?php echo $auc_colum[$year][$month][$day]['title'];?>
                             </a>
+                        <?php endif;?>
                         </div>
 
                         <!-- スケジュール -->
                         <div class="scheduleInfo">
-                        <?php if (isset($schedule[$year][$month][$day])):?>
-                        <?php foreach ($schedule[$year][$month][$day] as $key => $value) :?> 
-                            <a href="<?php echo 'cal_edit.php?sch_y='.$year.'&amp;sch_m='.$month.'&amp;sch_d='.$day.'&amp;sch_id='.$key ;?>" title = '<?php echo h($value['plan']);?>'> <?php echo '-'.h($value['title']);?><br></a>
-                        <?php endforeach;?>
-                        <?php endif ;?>
+                        <?php if ($day_class[$year][$month][$j][$i]['W'] != 'not') :?>
+                            <?php if (isset($schedule[$year][$month][$day])) :?>
+                                <?php foreach ($schedule[$year][$month][$day] as $key => $value) :?> 
+                                    <a href="<?php echo 'cal_edit.php?sch_y='.$year.'&amp;sch_m='.$month.'&amp;sch_d='.$day.'&amp;sch_id='.$key ;?>" title = '<?php echo h($value['plan']);?>'> <?php echo '-'.h($value['title']);?><br></a>
+                                <?php endforeach;?>
+                            <?php endif ;?>
+                        <?php endif;?>
                         </div>
 
                     </td>
