@@ -14,9 +14,16 @@ if ($timestamp === false) {
 
 //表示するカレンダーの数
 $calendar_number = 3;
+//カレンダーの先頭の曜日(sun=7, mon = 6)
+$calendar_first_d = 6;
 
 //曜日設定
-$weekday_index = array('日','月','火','水','木','金','土');
+if ($calendar_first_d == 7) {
+    $weekday_index = array('日', '月', '火', '水', '木', '金', '土');
+} elseif ($calendar_first_d == 6) {
+    $weekday_index = array('月', '火', '水', '木', '金', '土', '日');
+
+}
 
 //当月、先月、来月日付取得
 list($today_y,$today_m,$today_d) = explode('-', date('Y-n-j',strtotime('Now')));
@@ -45,7 +52,7 @@ $holidays = holidays($this_year, $this_month, $calendar_number);
 
 //カレンダー生成順に
 foreach ($calendar_y_m as $value) {
-    $calendar_make[] = array(calendar($value['calendar_y'], $value['calendar_m'], $holidays));
+    $calendar_make[] = array(calendar($value['calendar_y'], $value['calendar_m'], $holidays, $calendar_first_d));
 };
 
 //オークションコラム
@@ -55,71 +62,80 @@ $auc_colum = aucColum();
  *年と月を引数に
  *戻り値は
  */
-function calendar($year, $month, $holidays){
+function calendar($year, $month, $holidays ,$cal_f_d){
     //今月の最後の日
     $lastday = date('t', mktime(0, 0, 0, $month, 1, $year));
 
     //今月の最初の曜日(0 ~ 6)から始める
-    $weekday_count = date("w",mktime(0, 0, 0, $month, 1, $year));
-
+    $weekday_count = date("w", mktime(0, 0, 0, $month, 1, $year));
     //$weekに日付を代入
     $week_number = 0;
+    $day_count = ($weekday_count + $cal_f_d) % 7;
 
     //前月の日付を入れる
-    //list($last_y, $last_m, $last_d) = explode('-', date('Y-n-t', mktime(0, 0, 0, $month - 1, 1, $year)));
     $last_d = date('t', mktime(0, 0, 0, $month - 1, 1, $year));
-    for ($i = 0; $i < $weekday_count; $i++) { 
-        $week[$year][$month][$week_number][$i] = $last_d - ($weekday_count - $i -1);
+    for ($i = 0; $i < $day_count; $i++) { 
+        //$week[$year][$month][$week_number][$i] = $last_d - ($weekday_count - $i -1);
+        $week[$year][$month][$week_number][$i] = $last_d - ($day_count - $i - 1);
+        //$day_class[$year][$month][$week_number][$i]['W'] = 'not';
         $day_class[$year][$month][$week_number][$i]['W'] = 'not';
-
     }
 
+    //今月の日付を代入
     for ($i = 1; $i <= $lastday; $i++) {
-        //何年、何月、何週目、何曜日＝＞何日
-        $week[$year][$month][$week_number][$weekday_count] = $i;
+        //何年、何月、何週目、左から何番目＝＞何日
+        //$week[$year][$month][$week_number][$weekday_count] = $i;
+        $week[$year][$month][$week_number][$day_count] = $i;
         //何年、何月、何日＝＞何曜日（不要？）
-        $weekday[$year][$month][$i] = $weekday_count;
+        //$weekday[$year][$month][$i] = $weekday_count;
 
         //土、日の判断
-        switch ($weekday_count) {
+        switch ($day_count) {
             case 0:
-                $day_class[$year][$month][$week_number][$weekday_count]['W'] = 'Sun';
+                //$day_class[$year][$month][$week_number][$weekday_count]['W'] = 'Sun';
+                $day_class[$year][$month][$week_number][$day_count]['W'] = 'Sun';
                 break;
             
             case 6:
-                $day_class[$year][$month][$week_number][$weekday_count]['W'] = 'Sat';
+                //$day_class[$year][$month][$week_number][$weekday_count]['W'] = 'Sat';
+                $day_class[$year][$month][$week_number][$day_count]['W'] = 'Sat';
                 break;
         }
 
         //祝日は日曜日と同じclass
         if (isset($holidays[$year][$month][$i])) {
-            $day_class[$year][$month][$week_number][$weekday_count]['W'] = 'Sun';
+            //$day_class[$year][$month][$week_number][$weekday_count]['W'] = 'Sun';
+            $day_class[$year][$month][$week_number][$day_count]['W'] = 'Sun';
         }
 
         //今日判断
         list($today_y,$today_m,$today_d) = explode('-', date('Y-n-j',strtotime('Now')));
 
         if ($year == $today_y && $month == $today_m && $i == $today_d) {
-            $day_class[$year][$month][$week_number][$weekday_count]['Today'] = 'today';
+            //$day_class[$year][$month][$week_number][$weekday_count]['Today'] = 'today';
+            $day_class[$year][$month][$week_number][$day_count]['Today'] = 'today';
         }else{
-            $day_class[$year][$month][$week_number][$weekday_count]['Today'] = ' '; //array('Today' => ' ');
+            //$day_class[$year][$month][$week_number][$weekday_count]['Today'] = ' '; //array('Today' => ' ');
+            $day_class[$year][$month][$week_number][$day_count]['Today'] = ' '; //array('Today' => ' ');
         }
 
-        $weekday_count++;
-        if ($weekday_count == 7) {
+        $day_count++;
+        if ($day_count == 7) {
             $week_number++;
-            $weekday_count = 0;
+            $day_count = 0;
         }
 
     }
 
     //来月の日付を入れる
     //list($next_y, $next_m, $next_d) = explode('-', date('Y-n-t', mktime(0, 0, 0, $month + 1, 1, $year)));
-    //$next_d = date('Y-n-t', mktime(0, 0, 0, $month + 1, 1, $year));
-    if ($weekday_count != 0) {
+    $next_d = date('Y-n-t', mktime(0, 0, 0, $month + 1, 1, $year));
+    if ($day_count != 0) {
         $next_d = 1;
-        for ($i = $weekday_count; $i < 7; $i++) { 
+        for ($i = $day_count; $i < 7; $i++) { 
+            //$week[$year][$month][$week_number][$i] = $next_d;
             $week[$year][$month][$week_number][$i] = $next_d;
+            //$day_class[$year][$month][$week_number][$i]['W'] = 'not';
             $day_class[$year][$month][$week_number][$i]['W'] = 'not';
 
             $next_d++;
@@ -142,10 +158,10 @@ function calendar($year, $month, $holidays){
 function holidays($year, $month, $calendar_number){
     $count = -floor($calendar_number/2);
     //祝日取得開始日
-    $start_date  = date('Y-m-01', mktime(0, 0, 0,$month + $count, 1, $year));
+    $start_date  = date('Y-m-01', mktime(0, 0, 0, $month + $count, 1, $year));
 
     //祝日取得終了日
-    $finish_date = date('Y-m-t', mktime(0, 0, 0,$month + $count + $calendar_number - 1, 1, $year));
+    $finish_date = date('Y-m-t', mktime(0, 0, 0, $month + $count + $calendar_number - 1, 1, $year));
 
     //googleカレンダーより
     $holidays_url = sprintf(
@@ -224,10 +240,10 @@ function schedulesGet($year, $month, $calendar_number){
 
     $count = -floor($calendar_number/2);
     //予定取得開始日
-    $start_date  = date('Y-n-01 00:00:00', mktime(0, 0, 0,$month + $count, 1, $year));
+    $start_date  = date('Y-n-01 00:00:00', mktime(0, 0, 0, $month + $count, 1, $year));
 
     //予定取得終了日
-    $finish_date = date('Y-n-t 23:59:59', mktime(0, 0, 0,$month + $count + $calendar_number - 1, 1, $year));
+    $finish_date = date('Y-n-t 23:59:59', mktime(0, 0, 0, $month + $count + $calendar_number - 1, 1, $year));
 
     $url = 'localhost';
     $user = 'root';
@@ -375,16 +391,15 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
         <tbody>
         <!-- 曜日情報 -->
             <tr>
-            <?php for ($i = 0; $i <= 6; $i++) :?>
+            <?php foreach ($weekday_index as $value) :?>
                 <?php// $j = ($i + 6) % 7;?>
-                <td style='height: 20px'> <?php echo $weekday_index[$i];?> </td>
-            <?php endfor ?>
+                <td style='height: 20px'> <?php echo $value;?> </td>
+            <?php endforeach ?>
             </tr>
 
-            <?php for ($j = 0; $j < count($week[$year][$month]);$j ++):?>
+            <?php for ($j = 0; $j < count($week[$year][$month]); $j ++):?>
             <tr>
                 <?php for ($i = 0; $i <= 6; $i++):?>
-                    <?php// $i = ($i + 6) % 7 ;//mod7で折り返したい?>
                     <?php $day = $week[$year][$month][$j][$i];?>
                     <td class='<?php echo $day_class[$year][$month][$j][$i]['W'];?>'>
 
@@ -430,6 +445,9 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
     </table>
 <?php endforeach ;?>
 
-
+<!-- <form>
+    <input type="" name="">
+</form>
+ -->
 </body>
 </html>
