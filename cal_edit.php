@@ -91,8 +91,6 @@ if (empty($_SESSION['flg'])) {
         $error_msg = array();
 
         //エラーチェック
-        var_dump(strtotime($_SESSION['sch_start']));
-        var_dump(strtotime($_SESSION['sch_end']));
          //if (strtotime($_SESSION['sch_st_y'].'-'.$_SESSION['sch_st_m'].'-'.$_SESSION['sch_st_d']) > strtotime($_SESSION['sch_ed_y'].'-'.$_SESSION['sch_ed_m'].'-'.$_SESSION['sch_ed_d'])) {
         if (strtotime($_SESSION['sch_start']) > strtotime($_SESSION['sch_end'])) {
             $error_msg['date'] = '日時を正しく入力してください';

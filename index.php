@@ -13,16 +13,21 @@ if ($timestamp === false) {
 }
 
 //表示するカレンダーの数
-$calendar_number = 3;
+$calendar_number = 5;
 //カレンダーの先頭の曜日(sun=7, mon = 6)
 $calendar_first_d = 6;
 
 //曜日設定
-if ($calendar_first_d == 7) {
-    $weekday_index = array('日', '月', '火', '水', '木', '金', '土');
-} elseif ($calendar_first_d == 6) {
-    $weekday_index = array('月', '火', '水', '木', '金', '土', '日');
-
+// if ($calendar_first_d == 7) {
+//     $weekday_index = array('日', '月', '火', '水', '木', '金', '土');
+// } elseif ($calendar_first_d == 6) {
+//     $weekday_index = array('月', '火', '水', '木', '金', '土', '日');
+// }
+$w_index = array('日', '月', '火', '水', '木', '金', '土');
+$weekday_index = array();
+for ($i = 0; $i <= 6; $i++) { 
+    $j = ($i + (7 - $calendar_first_d)) % 7;
+    $weekday_index[$i] = $w_index[$j];
 }
 
 //当月、先月、来月日付取得
@@ -70,6 +75,7 @@ function calendar($year, $month, $holidays ,$cal_f_d){
     $weekday_count = date("w", mktime(0, 0, 0, $month, 1, $year));
     //$weekに日付を代入
     $week_number = 0;
+    //mod7で日付をずらす
     $day_count = ($weekday_count + $cal_f_d) % 7;
 
     //前月の日付を入れる
@@ -90,7 +96,7 @@ function calendar($year, $month, $holidays ,$cal_f_d){
         //$weekday[$year][$month][$i] = $weekday_count;
 
         //土、日の判断
-        switch ($day_count) {
+        switch (((7 - $cal_f_d) + $day_count) % 7) {
             case 0:
                 //$day_class[$year][$month][$week_number][$weekday_count]['W'] = 'Sun';
                 $day_class[$year][$month][$week_number][$day_count]['W'] = 'Sun';
@@ -118,7 +124,10 @@ function calendar($year, $month, $holidays ,$cal_f_d){
             //$day_class[$year][$month][$week_number][$weekday_count]['Today'] = ' '; //array('Today' => ' ');
             $day_class[$year][$month][$week_number][$day_count]['Today'] = ' '; //array('Today' => ' ');
         }
-
+        // $weekday_count++;
+        // if ($weekday_count == $day_count) {
+        //     $weekday_count = 1;
+        // }
         $day_count++;
         if ($day_count == 7) {
             $week_number++;
@@ -283,7 +292,7 @@ function schedulesGet($year, $month, $calendar_number){
             if (isset($command)) {
                 if ($result = mysqli_query($link, $command)) {
                 } else {
-                    echo "失敗";
+                    echo "再読み込み";
                 }
             }
     }
@@ -308,10 +317,11 @@ function schedulesGet($year, $month, $calendar_number){
         }
         mysqli_free_result($result);
     } else {
-        echo "失敗！";
+        echo "再読み込みしてください！";
     }
     mysqli_close($link);
     //SESSION初期化
+    //微妙...
     $_SESSION = array();
     if (isset($_COOKIE[session_name()])) {
         setcookie(session_name(), '', time() - 42000, '/');
