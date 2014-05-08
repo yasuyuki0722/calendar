@@ -13,7 +13,7 @@ if ($timestamp === false) {
 }
 
 //表示するカレンダーの数
-$calendar_number = 5;
+$calendar_number = 3;
 //カレンダーの先頭の曜日(sun=7, mon = 6)
 $calendar_first_d = 6;
 
@@ -350,7 +350,7 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
 <head>
     <meta charset='utf-8'>
     <title>calendar</title>
-    <link rel='stylesheet' href='style2.css'>
+    <link rel='stylesheet' href='style.css'>
 </head>
 <body>
 

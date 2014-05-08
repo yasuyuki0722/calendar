@@ -36,6 +36,17 @@ if (empty($_SESSION['flg'])) {
                 list($_SESSION['sch_ed_y'], $_SESSION['sch_ed_m'], $_SESSION['sch_ed_d'], $_SESSION['sch_ed_h'], $_SESSION['sch_ed_i']) = explode('-', $_SESSION['sch_end']);
                 $_SESSION['sch_title'] = $row['schedule_title'];
                 $_SESSION['sch_plan']  = $row['schedule_plan'];
+                // $sch_start = date('Y-n-j-H-i', strtotime($row['schedule_start']));
+                // $sch_end = date('Y-n-j-H-i', strtotime($row['schedule_end']));
+                // $_SESSION = array_merge(
+                //     $_SESSION, array(
+                //         'sch_id' => $sch_id;
+                //         'sch_start' => $sch_start;
+                //         'sch_end'   => $sch_end;
+                // list($_SESSION['sch_st_y'], $_SESSION['sch_st_m'], $_SESSION['sch_st_d'], $_SESSION['sch_st_h'], $_SESSION['sch_st_i']) = explode('-', $_SESSION['sch_start']);
+                // list($_SESSION['sch_ed_y'], $_SESSION['sch_ed_m'], $_SESSION['sch_ed_d'], $_SESSION['sch_ed_h'], $_SESSION['sch_ed_i']) = explode('-', $_SESSION['sch_end']);
+                // $_SESSION['sch_title'] = $row['schedule_title'];
+                // $_SESSION['sch_plan']  = $row['schedule_plan'];
             }
             mysqli_free_result($result);
         } else {
@@ -44,19 +55,39 @@ if (empty($_SESSION['flg'])) {
         mysqli_close($link);
     } else {
         //$sch_idがない場合はGETで受け取った日付を入れる
-        $_SESSION['sch_id']    = null;
-        $_SESSION['sch_st_y']  = $_SESSION['sch_ed_y'] = $sch_y;
-        $_SESSION['sch_st_m']  = $_SESSION['sch_ed_m'] = $sch_m;
-        $_SESSION['sch_st_d']  = $_SESSION['sch_ed_d'] = $sch_d;
-        $_SESSION['sch_st_h']  = 0;
-        $_SESSION['sch_st_i']  = 0;
-        $_SESSION['sch_ed_h']  = 0;
-        $_SESSION['sch_ed_i']  = 0;
-        $_SESSION['sch_title'] = '無題の予定';
-        $_SESSION['sch_plan']  = '内容がないよ';
-        $_SESSION['sch_start'] = $_SESSION['sch_st_y'].'-'.$_SESSION['sch_st_m'].'-'.$_SESSION['sch_st_d'].'-'.$_SESSION['sch_st_h'].'-'.$_SESSION['sch_st_i'];
-        $_SESSION['sch_end']   = $_SESSION['sch_ed_y'].'-'.$_SESSION['sch_ed_m'].'-'.$_SESSION['sch_ed_d'].'-'.$_SESSION['sch_ed_h'].'-'.$_SESSION['sch_ed_i'];
- 
+        // $_SESSION['sch_id']    = null;
+        // $_SESSION['sch_st_y']  = $_SESSION['sch_ed_y'] = $sch_y;
+        // $_SESSION['sch_st_m']  = $_SESSION['sch_ed_m'] = $sch_m;
+        // $_SESSION['sch_st_d']  = $_SESSION['sch_ed_d'] = $sch_d;
+        // $_SESSION['sch_st_h']  = 0;
+        // $_SESSION['sch_st_i']  = 0;
+        // $_SESSION['sch_ed_h']  = 0;
+        // $_SESSION['sch_ed_i']  = 0;
+        // $_SESSION['sch_title'] = '無題の予定';
+        // $_SESSION['sch_plan']  = '内容がないよ';
+        // $_SESSION['sch_start'] = $_SESSION['sch_st_y'].'-'.$_SESSION['sch_st_m'].'-'.$_SESSION['sch_st_d'].'-'.$_SESSION['sch_st_h'].'-'.$_SESSION['sch_st_i'];
+        // $_SESSION['sch_end']   = $_SESSION['sch_ed_y'].'-'.$_SESSION['sch_ed_m'].'-'.$_SESSION['sch_ed_d'].'-'.$_SESSION['sch_ed_h'].'-'.$_SESSION['sch_ed_i'];
+
+        $_SESSION = array_merge(
+            $_SESSION, array(
+                'sch_id'   => null,
+                'sch_st_y' => $sch_y,
+                'sch_ed_y' => $sch_y,
+                'sch_st_m' => $sch_m,
+                'sch_ed_m' => $sch_m,
+                'sch_st_d' => $sch_d,
+                'sch_ed_d' => $sch_d,
+                'sch_st_h' => 0,
+                'sch_st_i' => 0,
+                'sch_ed_h'  => 0,
+                'sch_ed_i'  => 0,
+                'sch_title' => '無題の予定',
+                'sch_plan'  => '内容がないよ',
+                'sch_start' => $sch_y.'-'.$sch_m.'-'.$sch_d.'-0-0',
+                'sch_end'   => $sch_y.'-'.$sch_m.'-'.$sch_d.'-0-0'
+            )
+        );
+var_dump($_SESSION);
     }
 
 //flgがたってるとき
@@ -69,19 +100,28 @@ if (empty($_SESSION['flg'])) {
 
     //
     if (isset($_POST['start_y_m'])) {
-        list($_SESSION['sch_st_y'], $_SESSION['sch_st_m']) = explode('-', $_POST['start_y_m']);
-        list($_SESSION['sch_ed_y'], $_SESSION['sch_ed_m']) = explode('-', $_POST['end_y_m']);
-        $_SESSION['sch_st_d']  = $_POST['start_d'];
-        $_SESSION['sch_ed_d']  = $_POST['end_d'];
-        $_SESSION['sch_st_h']  = $_POST['start_h'];
-        $_SESSION['sch_st_i']  = $_POST['start_i'];
-        $_SESSION['sch_ed_h']  = $_POST['end_h'];
-        $_SESSION['sch_ed_i']  = $_POST['end_i'];
-        $_SESSION['sch_title'] = $_POST['sch_title'];
-        $_SESSION['sch_plan']  = $_POST['sch_plan'];
-        $_SESSION['sch_start'] = $_SESSION['sch_st_y'].'-'.$_SESSION['sch_st_m'].'-'.$_SESSION['sch_st_d'].'-'.$_SESSION['sch_st_h'].'-'.$_SESSION['sch_st_i'];
-        $_SESSION['sch_end']   = $_SESSION['sch_ed_y'].'-'.$_SESSION['sch_ed_m'].'-'.$_SESSION['sch_ed_d'].'-'.$_SESSION['sch_ed_h'].'-'.$_SESSION['sch_ed_i'];
- 
+        list($start_y, $start_m) = explode('-', $_POST['start_y_m']);
+        list($end_y, $end_m) = explode('-', $_POST['end_y_m']);
+        $_SESSION = array_merge(
+            $_SESSION, array(
+                'sch_st_y'  => $start_y,
+                'sch_st_m'  => $start_m,
+                'sch_st_d'  => $_POST['start_d'],
+                'sch_st_h'  => $_POST['start_h'],
+                'sch_st_i'  => $_POST['start_i'],
+                'sch_ed_y'  => $end_y,
+                'sch_ed_m'  => $end_m,
+                'sch_ed_d'  => $_POST['end_d'],
+                'sch_ed_h'  => $_POST['end_h'],
+                'sch_ed_i'  => $_POST['end_i'],
+                'sch_title' => $_POST['sch_title'],
+                'sch_plan'  => $_POST['sch_plan'],
+                'sch_start' => $start_y.'-'.$start_m.'-'.$_POST['start_d'].'-'.$_POST['start_h'].'-'.$_POST['sch_st_i'],
+                'sch_end'   => $end_y.'-'.$end_m.'-'.$_POST['end_d'].'-'.$_POST['end_h'].'-'.$_POST['end_i']
+            )
+        );
+ var_dump($_SESSION);
+ echo "とおと";
     }
 
     //確認
@@ -246,7 +286,7 @@ function h($text){
     <input type="submit" name="submit" value="削除">
 </form>
 
-<a href="index2.php?year_month=<?php echo $_SESSION['sch_st_y'].'-'.$_SESSION['sch_st_m'];?>"> カレンダーに戻る </a>
+<a href="index.php?year_month=<?php echo $_SESSION['sch_st_y'].'-'.$_SESSION['sch_st_m'];?>"> カレンダーに戻る </a>
 
 </body>
 </html>
