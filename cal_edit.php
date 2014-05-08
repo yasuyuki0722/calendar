@@ -10,7 +10,7 @@ if (empty($_SESSION['flg'])) {
     $sch_m = isset($_GET['sch_m']) ? $_GET['sch_m'] : date('n');
     $sch_d = isset($_GET['sch_d']) ? $_GET['sch_d'] : date('d');
 
-    $sch_id = isset($_GET['sch_id']) ? $_GET['sch_id']: NULL;
+    $sch_id = isset($_GET['sch_id']) ? $_GET['sch_id'] : NULL;
 
     $url = 'localhost';
     $user = 'root';
@@ -101,6 +101,9 @@ if (empty($_SESSION['flg'])) {
         if ($_SESSION['sch_plan'] == '') {
             $error_msg['plan'] = '予定内容を入力してください';
         }
+        //文字列チェックもいるよね
+        //文字コードもみるの？？
+
 
         //エラーの有無
         if (count($error_msg) == 0) {
