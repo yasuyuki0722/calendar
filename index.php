@@ -279,13 +279,13 @@ function schedulesGet($year, $month, $calendar_number){
     if ($_POST['submit'] == '保存') {
         switch ($_SESSION['command']) {
             case 'update':
-                $command = sprintf('UPDATE cal_schedules SET schedule_title = "%s", schedule_plan = "%s", schedule_start = "%s", schedule_end = "%s", created_at = created_at, update_at = NOW() WHERE schedule_id = %d', $_SESSION['sch_title'], $_SESSION['sch_plan'], $_SESSION['sch_start'], $_SESSION['sch_end'], $_SESSION['sch_id']);
+                $command = sprintf('UPDATE cal_schedules SET schedule_title = "%s", schedule_plan = "%s", schedule_start = "%s", schedule_end = "%s", created_at = created_at, update_at = NOW() WHERE schedule_id = %d', $_SESSION['schedule']['title'], $_SESSION['schedule']['plan'], $_SESSION['schedule']['start'], $_SESSION['schedule']['end'], $_SESSION['schedule_id']);
                 break;
             case 'insert':
-                $command = sprintf('INSERT INTO cal_schedules (schedule_title, schedule_plan, schedule_start, schedule_end, update_at) VALUES ("%s", "%s", "%s", "%s", NOW())', $_SESSION['sch_title'], $_SESSION['sch_plan'], $_SESSION['sch_start'], $_SESSION['sch_end']);
+                $command = sprintf('INSERT INTO cal_schedules (schedule_title, schedule_plan, schedule_start, schedule_end, update_at) VALUES ("%s", "%s", "%s", "%s", NOW())', $_SESSION['schedule']['title'], $_SESSION['schedule']['plan'], $_SESSION['schedule']['start'], $_SESSION['schedule']['end']);
                 break;
             case 'delete';
-                $command = sprintf('UPDATE cal_schedules SET  created_at = created_at, update_at = NOW(), deleted_at = NOW() WHERE schedule_id = "%d"', $_SESSION['sch_id']);
+                $command = sprintf('UPDATE cal_schedules SET  created_at = created_at, update_at = NOW(), deleted_at = NOW() WHERE schedule_id = "%d"', $_SESSION['schedule_id']);
             }
 
             //SQL実行

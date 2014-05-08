@@ -29,28 +29,28 @@ function h($text){
         予定開始日
     </dt>
     <dd>
-        <?php echo $_SESSION['sch_st_y'].'年'.$_SESSION['sch_st_m'].'月'.$_SESSION['sch_st_d'].'日  '.$_SESSION['sch_st_h'].'時'.$_SESSION['sch_st_i'].'分';?>
+        <?php echo $_SESSION['schedule']['start_y'].'年'.$_SESSION['schedule']['start_m'].'月'.$_SESSION['schedule']['start_d'].'日  '.$_SESSION['schedule']['start_h'].'時'.$_SESSION['schedule']['start_i'].'分';?>
     </dd>
     <dt>
         予定終了日
     </dt>
     <dd>
-        <?php echo $_SESSION['sch_ed_y'].'年'.$_SESSION['sch_ed_m'].'月'.$_SESSION['sch_ed_d'].'日  '.$_SESSION['sch_ed_h'].'時'.$_SESSION['sch_ed_i'].'分';?>
+        <?php echo $_SESSION['schedule']['end_y'].'年'.$_SESSION['schedule']['end_m'].'月'.$_SESSION['schedule']['end_d'].'日  '.$_SESSION['schedule']['end_h'].'時'.$_SESSION['schedule']['end_i'].'分';?>
     </dd>
     <dt>
         タイトル
     </dt>
     <dd>
-        <?php echo h($_SESSION['sch_title']);?>
+        <?php echo h($_SESSION['schedule']['title']);?>
     </dd>
     <dt>
         内容
     </dt>
     <dd>
-        <?php echo h($_SESSION['sch_plan']);?>
+        <?php echo h($_SESSION['schedule']['plan']);?>
     </dd>
 </dl>
-<form action="index2.php?year_month=<?php echo $_SESSION['sch_st_y'].'-'.$_SESSION['sch_st_m'];?>" method="POST">
+<form action="index.php?year_month=<?php echo $_SESSION['schedule']['start_y'].'-'.$_SESSION['schedule']['start_m'];?>" method="POST">
     <input type="submit" name="submit" value="保存">
 </form>
 <a href="cal_edit.php">戻る</a>
