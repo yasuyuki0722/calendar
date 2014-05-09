@@ -2,7 +2,7 @@
 session_cache_limiter(none);
 session_start();
 
-//index2.phpからのアクセスか、確認フェーズのアクセスか
+//index.phpからのアクセスか、確認フェーズのアクセスか
 if (empty($_SESSION['flg'])) {
     $_SESSION['flg'] = 'on';
     date_default_timezone_get('Asia/Tolyo');
@@ -70,13 +70,13 @@ if (empty($_SESSION['flg'])) {
         $_SESSION['schedule_id'] = null;
         $_SESSION['schedule'] = array(
             'start_y' => $sch_y,
-            'end_y' => $sch_y,
             'start_m' => $sch_m,
-            'end_m' => $sch_m,
             'start_d' => $sch_d,
-            'end_d' => $sch_d,
             'start_h' => 0,
             'start_i' => 0,
+            'end_y' => $sch_y,
+            'end_m' => $sch_m,
+            'end_d' => $sch_d,
             'end_h'  => 0,
             'end_i'  => 0,
             'title' => '無題の予定',
