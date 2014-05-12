@@ -1,23 +1,7 @@
 <?php
 session_cache_limiter(none);
 session_start();
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if ($_POST['token']!== $_SESSION['token']) {
-        echo '不正！';
-        var_dump($_POST['token']);
-        var_dump($_SESSION['token']);
-    } else {
-        var_dump($_SESSION['token']);
-        var_dump($_POST['token']);
-        echo '?';
-
-    }
-}
-
-function h($text){
-    return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
-}
+require_once 'function.php';
 
 ?>
 <!DOCTYPE html>

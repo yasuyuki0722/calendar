@@ -53,6 +53,22 @@ function yearMonth(){
 }
 
 /**
+*年と月の入ったコンボボックス（前後一年分）の年月を返す
+*/
+function comboBoxMake($year){
+    $k = 0;
+    $sch_y_m = array();
+    for ($i = -1; $i <= 1; $i++) { 
+        for ($j=1; $j <= 12; $j++) { 
+            $sch_y_m[$k]['year']  = date('Y', mktime(0, 0, 0, $j, 1, $year + $i));
+            $sch_y_m[$k]['month'] = date('n', mktime(0, 0, 0, $j, 1, $year + $i));
+            $k++;
+        }
+    }
+    return $sch_y_m;
+}
+
+/**
 *年と月を引数に
 *戻り値は
 */
@@ -66,11 +82,19 @@ function calendar($year, $month, $holidays, $cal_f_d){
     //mod7で日付をずらす
     $day_count = ($weekday_count + $cal_f_d) % 7;
     //前月の日付を入れる
+    // $last_d = date('t', mktime(0, 0, 0, $month - 1, 1, $year));
+    // for ($i = 0; $i < $day_count; $i++) { 
+    //     $week[$year][$month][$week_number][$i] = $last_d - ($day_count - $i - 1);
+    //     $day_class[$year][$month][$week_number][$i]['W'] = 'not';
+    // }
+
     $last_d = date('t', mktime(0, 0, 0, $month - 1, 1, $year));
     for ($i = 0; $i < $day_count; $i++) { 
-        $week[$year][$month][$week_number][$i] = $last_d - ($day_count - $i - 1);
+        list($y, $m, $d) = date('Y-n-j', mktime(0, 0, 0, $month, $d - $i, $year))
+        $week[$y][$m][$week_number][$i] = $d;
         $day_class[$year][$month][$week_number][$i]['W'] = 'not';
     }
+
     //今月の日付を代入
     for ($i = 1; $i <= $lastday; $i++) {
         //何年、何月、何週目、左から何番目＝＞何日
@@ -82,7 +106,6 @@ function calendar($year, $month, $holidays, $cal_f_d){
             case 0:
                 $day_class[$year][$month][$week_number][$day_count]['W'] = 'Sun';
                 break;
-            
             case 6:
                 $day_class[$year][$month][$week_number][$day_count]['W'] = 'Sat';
                 break;
@@ -270,10 +293,34 @@ function schedulesGet($year, $month, $calendar_number){
 }
 
 /**
+*SESSION初期化
+*/
+function sessionReset(){
+    $_SESSION = array();
+    if (isset($_COOKIE[session_name()])) {
+        setcookie(session_name(), '', time() - 42000, '/');
+    }
+    session_destroy();
+    return;
+}
+
+/**
 *XSS対策
 */
 function h($text){
     return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+}
+
+/**
+*トークンをチェック
+*/
+function tokenCheck(){
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if ($_POST['token']!== $_SESSION['token']) {
+            exit('不正名アクセスです！');
+        } 
+    }
+    return;
 }
 
 

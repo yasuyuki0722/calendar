@@ -2,20 +2,10 @@
 session_cache_limiter(none);
 session_start();
 
+require_once 'function.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if ($_POST['token']!== $_SESSION['token']) {
-        echo '不正！';
-        var_dump($_POST['token']);
-        var_dump($_SESSION['token']);
-    } else {
-        var_dump($_SESSION['token']);
-        var_dump($_POST['token']);
+tokenCheck();
 
-    }
-}
-//$_SESSION['token'] = sha1($session_id);
-//$_SESSION['token'] = sha1(session_id());
 $_SESSION['token'] = hash('sha256', session_id());
 
 //index.phpからのアクセスか、確認フェーズのアクセスか
@@ -28,35 +18,37 @@ if (empty($_SESSION['flg'])) {
 
     $sch_id = isset($_GET['sch_id']) ? $_GET['sch_id'] : NULL;
 
-    $url = 'localhost';
-    $user = 'root';
-    $pass = '';
-    $db = 'calendar';
-
     //$sch_idの有無をチェック
     if (isset($sch_id)) {
+        $url = 'localhost';
+        $user = 'root';
+        $pass = '';
+        $db = 'calendar';
         //$sch_idに対応する予定をDBからSELECT
         $link = mysqli_connect($url, $user, $pass, $db);
         //接続状態チェック
         if (mysqli_connect_errno()) {
-            die(mysqli_conect_error());
+            echo '接続中にエラーが発生しました';
+            //die(mysqli_conect_error());
         }
-        $select = sprintf('SELECT * FROM cal_schedules WHERE schedule_id = "%s"', $sch_id);
-        //mysqli_queryに配列がかえるかfalseがかえる
-        if ($result = mysqli_query($link, $select)) {
-            while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+        //プリペアドステートメントを用いてselect
+        if ($stmt = mysqli_prepare($link, 'SELECT * FROM cal_schedules WHERE schedule_id = ?')){
+        //     echo 'miss!';
+        // } else {
+            mysqli_stmt_bind_param($stmt, 'd', $sch_id);
+            mysqli_stmt_execute($stmt);
+            mysqli_stmt_bind_result($stmt, $sch_id, $user_id, $sch_title, $sch_plan, $sch_start, $sch_end, $creat, $update, $delete);
+            while (mysqli_stmt_fetch($stmt)){
                 $_SESSION['schedule_id'] = $sch_id;
-                $_SESSION['schedule']['start'] = date('Y-n-j-H-i', strtotime($row['schedule_start']));
-                $_SESSION['schedule']['end']   = date('Y-n-j-H-i', strtotime($row['schedule_end']));
+                $_SESSION['schedule']['start'] = date('Y-n-j-H-i', strtotime($sch_start));
+                $_SESSION['schedule']['end']   = date('Y-n-j-H-i', strtotime($sch_end));
                 list($_SESSION['schedule']['start_y'], $_SESSION['schedule']['start_m'], $_SESSION['schedule']['start_d'], $_SESSION['schedule']['start_h'], $_SESSION['schedule']['start_i']) = explode('-', $_SESSION['schedule']['start']);
                 list($_SESSION['schedule']['end_y'], $_SESSION['schedule']['end_m'], $_SESSION['schedule']['end_d'], $_SESSION['schedule']['end_h'], $_SESSION['schedule']['end_i']) = explode('-', $_SESSION['schedule']['end']);
-                $_SESSION['schedule']['title'] = $row['schedule_title'];
-                $_SESSION['schedule']['plan']  = $row['schedule_plan'];
+                $_SESSION['schedule']['title'] = $sch_title;
+                $_SESSION['schedule']['plan']  = $sch_plan;
             }
-            mysqli_free_result($result);
-        } else {
-            echo "失敗！";
         }
+        mysqli_stmt_close($stmt);
         mysqli_close($link);
     } else {
         //$sch_idがない場合はGETで受け取った日付を入れる
@@ -85,6 +77,7 @@ if (empty($_SESSION['flg'])) {
     if ($_POST['submit'] == '削除') {
         $_SESSION['command'] = 'delete';
         header('Location: http://192.168.33.10/calendar/cal_edit_comp.php');
+        exit();
     }
     if (isset($_POST['start_y_m'])) {
         list($start_y, $start_m) = explode('-', $_POST['start_y_m']);
@@ -112,23 +105,27 @@ if (empty($_SESSION['flg'])) {
         //$error_msg初期化
         $error_msg = array();
         //エラーチェック
+        if ($_SESSION['schedule']['start_d'] > date('t', strtotime($_SESSION['schedule']['start_y'].'-'.$_SESSION['schedule']['start_m']))) {
+            $error_msg['date']['start'] = '日時を正しく入力してください！';
+        }
+        if ($_SESSION['schedule']['end_d'] > date('t', strtotime($_SESSION['schedule']['schedule']['end_y'].'-'.$_SESSION['schedule']['end_m']))) {
+            $error_msg['date']['end'] = '日時を正しく入力してください！';
+        }
         if (strtotime($_SESSION['schedule']['start']) > strtotime($_SESSION['schedule']['end'])) {
-            $error_msg['date'] = '日時を正しく入力してください';
+            $error_msg['date']['miss'] = '終了日時が開始日時より先になっています！';
         }
         if ($_SESSION['schedule']['title'] == '') {
-            $error_msg['title']['none'] = '予定タイトルを入力してください';
+            $error_msg['title']['none'] = '予定タイトルを入力してください！';
         }
         if (mb_strlen($_SESSION['schedule']['title']) > 45) {
-            $error_msg['title']['length'] = 'タイトルは45文字まで';
+            $error_msg['title']['length'] = 'タイトルは45文字まで！';
         }
         if ($_SESSION['schedule']['plan'] == '') {
-            $error_msg['plan']['none'] = '予定内容を入力してください';
+            $error_msg['plan']['none'] = '予定内容を入力してください！';
         }
         if (strlen($_SESSION['schedule']['plan']) > 65535) {
-            $error_msg['plan']['length'] = '予定が長すぎます';
+            $error_msg['plan']['length'] = '予定が長すぎます！';
         }
-        //文字列チェックもいるよね
-        //文字コードもみるの？？
 
         //エラーの有無
         if (count($error_msg) == 0) {
@@ -138,24 +135,13 @@ if (empty($_SESSION['flg'])) {
                 $_SESSION['command'] = 'insert';
             }
             header('Location: http://192.168.33.10/calendar/cal_edit_comp.php');
+            exit();
         } 
     }
 }
 
 //予定開始年月設定
-$k = 0;
-$sch_y_m = array();
-for ($i = -1; $i <= 1; $i++) { 
-    for ($j=1; $j <= 12; $j++) { 
-        $sch_y_m[$k]['year']  = date('Y', mktime(0, 0, 0, $j, 1, $_SESSION['schedule']['start_y'] + $i));
-        $sch_y_m[$k]['month'] = date('n', mktime(0, 0, 0, $j, 1, $_SESSION['schedule']['start_y'] + $i));
-        $k++;
-    }
-}
-
-function h($text){
-    return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
-}
+$combo_y_m = comboBoxMake($_SESSION['schedule']['start_y']);
 
 ?>
 
@@ -174,7 +160,7 @@ function h($text){
         </dt>
         <dd>
             <select name="start_y_m">
-            <?php foreach ($sch_y_m as $value):?>
+            <?php foreach ($combo_y_m as $value):?>
                 <?php if ($value['year'] == $_SESSION['schedule']['start_y'] && $value['month'] == $_SESSION['schedule']['start_m']):?>
                     <option value="<?php echo $value['year'].'-'.$value['month'];?>" selected><?php echo $value['year'].'年'.$value['month'].'月'?></option>
                 <?php else:?>
@@ -215,7 +201,7 @@ function h($text){
         </dt>
         <dd>
             <select name="end_y_m">
-            <?php foreach ($sch_y_m as $value):?>
+            <?php foreach ($combo_y_m as $value):?>
                 <?php if ($value['year'] == $_SESSION['schedule']['end_y'] && $value['month'] == $_SESSION['schedule']['end_m']):?>
                     <option value="<?php echo $value['year'].'-'.$value['month'];?>" selected><?php echo $value['year'].'年'.$value['month'].'月';?></option>
                 <?php else:?>
@@ -250,7 +236,11 @@ function h($text){
                     <?php endif;?>
                 <?php endfor;?>
             </select>
-        <?php echo $error_msg['date'];?>
+            <?php if (isset($error_msg['date'])):?>
+                <?php foreach ($error_msg['date'] as $value):?>
+                    <?php echo $value;?>
+                <?php endforeach;?>
+            <?php endif;?>
         </dd>
         <dt>
             予定タイトル

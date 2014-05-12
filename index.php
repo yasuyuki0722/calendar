@@ -1,13 +1,7 @@
 <?php
-//SESSION初期化
 session_start();
-$_SESSION = array();
-if (isset($_COOKIE[session_name()])) {
-    setcookie(session_name(), '', time() - 42000, '/');
-}
-session_destroy();
-
 require_once 'function.php';
+sessionReset();
 
 $cal_regi_link = 'http://192.168.33.10/calendar/cal_edit.php?';
 date_default_timezone_get('Asia/Tolyo');
@@ -29,6 +23,9 @@ $holidays = holidays($this_year, $this_month, $calendar_number);
 //カレンダー用年月情報
 $calendar_y_m = calYearMonth($calendar_number, $this_year, $this_month);
 
+//コンボボックス用年月
+$combo_y_m = comboBoxMake($this_year);
+
 //カレンダー
 foreach ($calendar_y_m as $value) {
     $calendar_make[] = array(calendar($value['calendar_y'], $value['calendar_m'], $holidays, $calendar_first_day));
@@ -40,6 +37,7 @@ $auc_colum = aucColum();
 //予定
 $schedule = schedulesGet($this_year, $this_month, $calendar_number);
 ?>
+
 <!DOCTYPE html>
 <html lang='ja'>
 <head>
@@ -56,33 +54,23 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
     <a href="?year_month=<?php echo $next_year.'-'.$next_month; ?>">次月</a>
     <form action='' method='get'>
         <select name='year_month'>
-            <?php for ($select_y = $this_year - 1; $select_y <= $this_year + 1; $select_y++) :?> 
-                <?php for ($select_m = 1; $select_m <= 12 ; $select_m++) :?>
-                    <?php if ($select_y == $this_year && $select_m == $this_month):?>
-                    <option value = "<?php echo $select_y.'-'.$select_m ;?>" selected>
-                        <?php echo $select_y.'年'.$select_m.'月';?>
-                    </option>
-                    <?php else :?>
-                    <option value = "<?php echo $select_y.'-'.$select_m ;?>">
-                        <?php echo $select_y.'年'.$select_m.'月';?>
-                    </option>
-                <?php endif ;?>
-                <?php endfor ;?>
-            <?php endfor ;?>
+            <?php foreach ($combo_y_m as $value):?>
+                <?php if ($value['year'] == $this_year && $value['month'] == $this_month):?>
+                    <option value="<?php echo $value['year'].'-'.$value['month'];?>" selected><?php echo $value['year'].'年'.$value['month'].'月'?></option>
+                <?php else:?>
+                    <option value="<?php echo  $value['year'].'-'.$value['month'];?>"><?php echo $value['year'].'年'.$value['month'].'月';?></option>
+                <?php endif;?>
+            <?php endforeach;?>
         </select>
         <input type = 'submit' value = '更新'>
     </form>
-
 </div>
-
 <?php foreach ($calendar_make as $value) :?>
     <?php
     $week  = $value[0]['week'];
     $year  = $value[0]['year'];
     $month = $value[0]['month'];
     $weekday = $value[0]['weekday'];
-    //$holidays = $value[0]['holidays'];
-    //$auc_colum = $value[0]['auc_colum'];
     $day_class = $value[0]['day_class'];
     ?>
     <table class="calendar">
@@ -95,7 +83,6 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
         <!-- 曜日情報 -->
             <tr>
             <?php foreach ($weekday_index as $value) :?>
-                <?php// $j = ($i + 6) % 7;?>
                 <td style='height: 20px'> <?php echo $value;?> </td>
             <?php endforeach ?>
             </tr>
