@@ -1,11 +1,22 @@
 <?php
 session_cache_limiter(none);
 session_start();
-// $_SESSION['sch_start'] = $_SESSION['sch_st_y'].'-'.$_SESSION['sch_st_m'].'-'.$_SESSION['sch_st_d'].'-'.$_SESSION['sch_st_h'].'-'.$_SESSION['sch_st_i'];
-// $_SESSION['sch_end']   = $_SESSION['sch_ed_y'].'-'.$_SESSION['sch_ed_m'].'-'.$_SESSION['sch_ed_d'].'-'.$_SESSION['sch_ed_h'].'-'.$_SESSION['sch_ed_i'];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($_POST['token']!== $_SESSION['token']) {
+        echo '不正！';
+        var_dump($_POST['token']);
+        var_dump($_SESSION['token']);
+    } else {
+        var_dump($_SESSION['token']);
+        var_dump($_POST['token']);
+        echo '?';
+
+    }
+}
 
 function h($text){
-    return htmlspecialchars($text);
+    return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
 }
 
 ?>
@@ -50,7 +61,7 @@ function h($text){
         <?php echo h($_SESSION['schedule']['plan']);?>
     </dd>
 </dl>
-<form action="index.php?year_month=<?php echo $_SESSION['schedule']['start_y'].'-'.$_SESSION['schedule']['start_m'];?>" method="POST">
+<form action="cal_sql.php" method="POST">
     <input type="submit" name="submit" value="保存">
 </form>
 <a href="cal_edit.php">戻る</a>

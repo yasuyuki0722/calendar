@@ -2,6 +2,22 @@
 session_cache_limiter(none);
 session_start();
 
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($_POST['token']!== $_SESSION['token']) {
+        echo '不正！';
+        var_dump($_POST['token']);
+        var_dump($_SESSION['token']);
+    } else {
+        var_dump($_SESSION['token']);
+        var_dump($_POST['token']);
+
+    }
+}
+//$_SESSION['token'] = sha1($session_id);
+//$_SESSION['token'] = sha1(session_id());
+$_SESSION['token'] = hash('sha256', session_id());
+
 //index.phpからのアクセスか、確認フェーズのアクセスか
 if (empty($_SESSION['flg'])) {
     $_SESSION['flg'] = 'on';
@@ -36,17 +52,6 @@ if (empty($_SESSION['flg'])) {
                 list($_SESSION['schedule']['end_y'], $_SESSION['schedule']['end_m'], $_SESSION['schedule']['end_d'], $_SESSION['schedule']['end_h'], $_SESSION['schedule']['end_i']) = explode('-', $_SESSION['schedule']['end']);
                 $_SESSION['schedule']['title'] = $row['schedule_title'];
                 $_SESSION['schedule']['plan']  = $row['schedule_plan'];
-                // $sch_start = date('Y-n-j-H-i', strtotime($row['schedule_start']));
-                // $sch_end = date('Y-n-j-H-i', strtotime($row['schedule_end']));
-                // $_SESSION = array_merge(
-                //     $_SESSION, array(
-                //         'sch_id' => $sch_id;
-                //         'sch_start' => $sch_start;
-                //         'sch_end'   => $sch_end;
-                // list($_SESSION['sch_st_y'], $_SESSION['sch_st_m'], $_SESSION['sch_st_d'], $_SESSION['sch_st_h'], $_SESSION['sch_st_i']) = explode('-', $_SESSION['sch_start']);
-                // list($_SESSION['sch_ed_y'], $_SESSION['sch_ed_m'], $_SESSION['sch_ed_d'], $_SESSION['sch_ed_h'], $_SESSION['sch_ed_i']) = explode('-', $_SESSION['sch_end']);
-                // $_SESSION['sch_title'] = $row['schedule_title'];
-                // $_SESSION['sch_plan']  = $row['schedule_plan'];
             }
             mysqli_free_result($result);
         } else {
@@ -55,18 +60,6 @@ if (empty($_SESSION['flg'])) {
         mysqli_close($link);
     } else {
         //$sch_idがない場合はGETで受け取った日付を入れる
-        // $_SESSION['sch_id']    = null;
-        // $_SESSION['sch_st_y']  = $_SESSION['sch_ed_y'] = $sch_y;
-        // $_SESSION['sch_st_m']  = $_SESSION['sch_ed_m'] = $sch_m;
-        // $_SESSION['sch_st_d']  = $_SESSION['sch_ed_d'] = $sch_d;
-        // $_SESSION['sch_st_h']  = 0;
-        // $_SESSION['sch_st_i']  = 0;
-        // $_SESSION['sch_ed_h']  = 0;
-        // $_SESSION['sch_ed_i']  = 0;
-        // $_SESSION['sch_title'] = '無題の予定';
-        // $_SESSION['sch_plan']  = '内容がないよ';
-        // $_SESSION['sch_start'] = $_SESSION['sch_st_y'].'-'.$_SESSION['sch_st_m'].'-'.$_SESSION['sch_st_d'].'-'.$_SESSION['sch_st_h'].'-'.$_SESSION['sch_st_i'];
-        // $_SESSION['sch_end']   = $_SESSION['sch_ed_y'].'-'.$_SESSION['sch_ed_m'].'-'.$_SESSION['sch_ed_d'].'-'.$_SESSION['sch_ed_h'].'-'.$_SESSION['sch_ed_i'];
         $_SESSION['schedule_id'] = null;
         $_SESSION['schedule'] = array(
             'start_y' => $sch_y,
@@ -84,7 +77,6 @@ if (empty($_SESSION['flg'])) {
             'start' => $sch_y.'-'.$sch_m.'-'.$sch_d.'-0-0',
             'end'   => $sch_y.'-'.$sch_m.'-'.$sch_d.'-0-0'
             );
-var_dump($_SESSION);
     }
 
 //flgがたってるとき
@@ -94,8 +86,6 @@ var_dump($_SESSION);
         $_SESSION['command'] = 'delete';
         header('Location: http://192.168.33.10/calendar/cal_edit_comp.php');
     }
-
-    //
     if (isset($_POST['start_y_m'])) {
         list($start_y, $start_m) = explode('-', $_POST['start_y_m']);
         list($end_y, $end_m) = explode('-', $_POST['end_y_m']);
@@ -115,30 +105,30 @@ var_dump($_SESSION);
             'start' => $start_y.'-'.$start_m.'-'.$_POST['start_d'].'-'.$_POST['start_h'].'-'.$_POST['start_i'],
             'end'   => $end_y.'-'.$end_m.'-'.$_POST['end_d'].'-'.$_POST['end_h'].'-'.$_POST['end_i']
             );
- var_dump($_SESSION);
- echo "とおと";
     }
 
     //確認
     if ($_POST['submit'] == '確認') {
-
         //$error_msg初期化
         $error_msg = array();
-
         //エラーチェック
-         //if (strtotime($_SESSION['sch_st_y'].'-'.$_SESSION['sch_st_m'].'-'.$_SESSION['sch_st_d']) > strtotime($_SESSION['sch_ed_y'].'-'.$_SESSION['sch_ed_m'].'-'.$_SESSION['sch_ed_d'])) {
         if (strtotime($_SESSION['schedule']['start']) > strtotime($_SESSION['schedule']['end'])) {
             $error_msg['date'] = '日時を正しく入力してください';
         }
         if ($_SESSION['schedule']['title'] == '') {
-            $error_msg['title'] = '予定タイトルを入力してください';
+            $error_msg['title']['none'] = '予定タイトルを入力してください';
+        }
+        if (mb_strlen($_SESSION['schedule']['title']) > 45) {
+            $error_msg['title']['length'] = 'タイトルは45文字まで';
         }
         if ($_SESSION['schedule']['plan'] == '') {
-            $error_msg['plan'] = '予定内容を入力してください';
+            $error_msg['plan']['none'] = '予定内容を入力してください';
+        }
+        if (strlen($_SESSION['schedule']['plan']) > 65535) {
+            $error_msg['plan']['length'] = '予定が長すぎます';
         }
         //文字列チェックもいるよね
         //文字コードもみるの？？
-
 
         //エラーの有無
         if (count($error_msg) == 0) {
@@ -164,7 +154,7 @@ for ($i = -1; $i <= 1; $i++) {
 }
 
 function h($text){
-    return htmlspecialchars($text);
+    return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
 }
 
 ?>
@@ -252,7 +242,7 @@ function h($text){
                 <?php endfor;?>
             </select>
             <select name="end_i">
-                <?php for ($i = 0; $i <=30; $i = $i + 30):?>
+                <?php for ($i = 0; $i <= 30; $i = $i + 30):?>
                     <?php if ($i == $_SESSION['schedule']['end_i']):?>
                         <option value="<?php echo $i;?>" selected><?php echo $i;?>分</option>
                     <?php else:?>
@@ -267,16 +257,25 @@ function h($text){
         </dt>
         <dd>
             <input type="text" name="sch_title" value="<?php echo h($_SESSION['schedule']['title']);?>">
-            <?php echo $error_msg['title'];?>
+            <?php if (isset($error_msg['title'])):?>
+                <?php foreach ($error_msg['title'] as $value):?>
+                    <?php echo $value;?>
+                <?php endforeach;?>
+            <?php endif;?>
         </dd>
         <dt>
             内容
         </dt>
         <dd>
             <textarea name="sch_plan"><?php echo h($_SESSION['schedule']['plan']);?></textarea> 
-            <?php echo $error_msg['plan'];?>
+            <?php if (isset($error_msg['plan'])):?>
+                <?php foreach ($error_msg['plan'] as $value):?>
+                    <?php echo $value;?>
+                <?php endforeach;?>
+            <?php endif;?>
         </dd>
     </dl>
+    <input type="hidden" name="token" value="<?php echo h($_SESSION['token']);?>">
     <input type="submit" name="submit" value="確認">
     <input type="submit" name="submit" value="削除">
 </form>

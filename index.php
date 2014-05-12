@@ -1,22 +1,45 @@
 <?php
+//SESSION初期化
+session_start();
+$_SESSION = array();
+if (isset($_COOKIE[session_name()])) {
+    setcookie(session_name(), '', time() - 42000, '/');
+}
+session_destroy();
+
 require_once 'function.php';
+
+$cal_regi_link = 'http://192.168.33.10/calendar/cal_edit.php?';
+date_default_timezone_get('Asia/Tolyo');
+
+//表示するカレンダーの数
+$calendar_number = 3;
+//カレンダーの先頭の曜日(sun=7, mon = 6)
+$calendar_first_day = 7;
+
+//曜日設定
+$weekday_index = weekdaySet($calendar_first_day);
+
+//年月日情報
+list($this_year, $this_month, $prev_year, $prev_month, $next_year, $next_month) = yearMonth();
 
 //祝日情報
 $holidays = holidays($this_year, $this_month, $calendar_number);
 
-//カレンダー生成順に
+//カレンダー用年月情報
+$calendar_y_m = calYearMonth($calendar_number, $this_year, $this_month);
+
+//カレンダー
 foreach ($calendar_y_m as $value) {
-    $calendar_make[] = array(calendar($value['calendar_y'], $value['calendar_m'], $holidays, $calendar_first_d));
-};
+    $calendar_make[] = array(calendar($value['calendar_y'], $value['calendar_m'], $holidays, $calendar_first_day));
+}
 
 //オークションコラム
 $auc_colum = aucColum();
+
 //予定
 $schedule = schedulesGet($this_year, $this_month, $calendar_number);
-
 ?>
-
-
 <!DOCTYPE html>
 <html lang='ja'>
 <head>
@@ -28,9 +51,9 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
 
 <div align='center'>
     <h1>かれんだーだよ！</h1>
-    <a href="?year_month=<?php echo $prev_year.'-'.$prev_month; ?>">先月</a>
-    <a href="?year_month=<?php echo $today_y.'-'.$today_m; ?>">今月</a>
-    <a href="?year_month=<?php echo $next_year.'-'.$next_month; ?>">来月</a>
+    <a href="?year_month=<?php echo $prev_year.'-'.$prev_month; ?>">前月</a>
+    <a href="?year_month=<?php echo date('Y-n'); ?>">今月</a>
+    <a href="?year_month=<?php echo $next_year.'-'.$next_month; ?>">次月</a>
     <form action='' method='get'>
         <select name='year_month'>
             <?php for ($select_y = $this_year - 1; $select_y <= $this_year + 1; $select_y++) :?> 
@@ -118,10 +141,5 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
         </tbody>
     </table>
 <?php endforeach ;?>
-
-<!-- <form>
-    <input type="" name="">
-</form>
- -->
 </body>
 </html>
