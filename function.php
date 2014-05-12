@@ -82,18 +82,18 @@ function calendar($year, $month, $holidays, $cal_f_d){
     //mod7で日付をずらす
     $day_count = ($weekday_count + $cal_f_d) % 7;
     //前月の日付を入れる
-    // $last_d = date('t', mktime(0, 0, 0, $month - 1, 1, $year));
-    // for ($i = 0; $i < $day_count; $i++) { 
-    //     $week[$year][$month][$week_number][$i] = $last_d - ($day_count - $i - 1);
-    //     $day_class[$year][$month][$week_number][$i]['W'] = 'not';
-    // }
-
     $last_d = date('t', mktime(0, 0, 0, $month - 1, 1, $year));
     for ($i = 0; $i < $day_count; $i++) { 
-        list($y, $m, $d) = date('Y-n-j', mktime(0, 0, 0, $month, $d - $i, $year))
-        $week[$y][$m][$week_number][$i] = $d;
+        $week[$year][$month][$week_number][$i] = $last_d - ($day_count - $i - 1);
         $day_class[$year][$month][$week_number][$i]['W'] = 'not';
     }
+
+    // $last_d = date('t', mktime(0, 0, 0, $month - 1, 1, $year));
+    // for ($i = 0; $i < $day_count; $i++) { 
+    //     list($y, $m, $d) = date('Y-n-j', mktime(0, 0, 0, $month, $d - $i, $year))
+    //     $week[$y][$m][$week_number][$i] = $d;
+    //     $day_class[$year][$month][$week_number][$i]['W'] = 'not';
+    // }
 
     //今月の日付を代入
     for ($i = 1; $i <= $lastday; $i++) {
