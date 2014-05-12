@@ -150,6 +150,32 @@ $combo_y_m = comboBoxMake($_SESSION['schedule']['start_y']);
 <head>
     <meta charset='utf-8'>
     <title>calendar_regist</title>
+//     <script type="text/javascript">
+//     function check(){
+//         var must = Array('sch_title', 'sch_plan');
+//         var miss = Array('タイトル', '内容');
+//         var leng = must.length;
+//         var er_count = 0;
+//         for (var i = 0; i < leng; i++) {
+//             var obj = document.info.elements[must[i]];
+//             if (obj.type=='text' || obj.type=='textarea' ) {
+//                 if (obj.value == '') {
+//                      alert(miss[i] + 'は必須です');
+//                     // document.info.elements[must[i]].focus;
+//                     // var e = document.createElement('name');
+//                     //     t = document.createTextNode('ないよ！')
+//                     // document.body.appendChild(e).appendChild(t);
+//                     er_count++;
+//                 }
+
+//             }
+//         }
+//         if (er_count > 0) {
+//             return false;
+//         };
+//         return true;
+//     }
+// </script>
 </head>
 <body>
 <h1>予定編集画面</h1>
@@ -266,7 +292,7 @@ $combo_y_m = comboBoxMake($_SESSION['schedule']['start_y']);
         </dd>
     </dl>
     <input type="hidden" name="token" value="<?php echo h($_SESSION['token']);?>">
-    <input type="submit" name="submit" value="確認">
+    <input type="submit" name="submit" value="確認" onclick="check()">
     <input type="submit" name="submit" value="削除">
 </form>
 
