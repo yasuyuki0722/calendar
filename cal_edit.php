@@ -2,6 +2,7 @@
 session_cache_limiter(none);
 session_start();
 
+var_dump($_SESSION['flg']);
 require_once 'function.php';
 
 tokenCheck();
@@ -9,8 +10,8 @@ tokenCheck();
 $_SESSION['token'] = hash('sha256', session_id());
 
 //index.phpからのアクセスか、確認フェーズのアクセスか
-if (empty($_SESSION['flg'])) {
-    $_SESSION['flg'] = 'on';
+if (!isset($_SESSION['flg'])) {
+    $_SESSION['flg'] = true;
     date_default_timezone_get('Asia/Tolyo');
     $sch_y = isset($_GET['sch_y']) ? $_GET['sch_y'] : date('Y');
     $sch_m = isset($_GET['sch_m']) ? $_GET['sch_m'] : date('n');
@@ -76,7 +77,7 @@ if (empty($_SESSION['flg'])) {
     //削除
     if ($_POST['submit'] == '削除') {
         $_SESSION['command'] = 'delete';
-        header('Location: http://192.168.33.10/calendar/cal_edit_comp.php');
+        header('Location: cal_edit_comp.php');
         exit();
     }
     if (isset($_POST['start_y_m'])) {
@@ -134,7 +135,7 @@ if (empty($_SESSION['flg'])) {
             } else {
                 $_SESSION['command'] = 'insert';
             }
-            header('Location: http://192.168.33.10/calendar/cal_edit_comp.php');
+            header('Location: cal_edit_comp.php');
             exit();
         } 
     }
@@ -150,36 +151,11 @@ $combo_y_m = comboBoxMake($_SESSION['schedule']['start_y']);
 <head>
     <meta charset='utf-8'>
     <title>calendar_regist</title>
-//     <script type="text/javascript">
-//     function check(){
-//         var must = Array('sch_title', 'sch_plan');
-//         var miss = Array('タイトル', '内容');
-//         var leng = must.length;
-//         var er_count = 0;
-//         for (var i = 0; i < leng; i++) {
-//             var obj = document.info.elements[must[i]];
-//             if (obj.type=='text' || obj.type=='textarea' ) {
-//                 if (obj.value == '') {
-//                      alert(miss[i] + 'は必須です');
-//                     // document.info.elements[must[i]].focus;
-//                     // var e = document.createElement('name');
-//                     //     t = document.createTextNode('ないよ！')
-//                     // document.body.appendChild(e).appendChild(t);
-//                     er_count++;
-//                 }
-
-//             }
-//         }
-//         if (er_count > 0) {
-//             return false;
-//         };
-//         return true;
-//     }
-// </script>
+    <script type="text/javascript" src='edit.js'></script>
 </head>
 <body>
 <h1>予定編集画面</h1>
-<form action="" method="POST">
+<form action="" name="info" method="POST">
     <dl>
         <dt>
             予定開始日

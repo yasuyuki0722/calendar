@@ -1,5 +1,12 @@
 <?php
 
+/**
+*曜日の順番をかえて配列を戻す
+*
+*@param int $calendar_first_d 
+*@return array $weekday_index
+*/
+
 function weekdaySet($calendar_first_d){
     $w_index = array('日', '月', '火', '水', '木', '金', '土');
     $weekday_index = array();
@@ -13,6 +20,10 @@ function weekdaySet($calendar_first_d){
 /**
 *生成するカレンダーの開始月、終了月を返す
 *
+*@param int $calendar_number 表示するカレンダーの数
+*@param int $this_year カレンダーで表示するメインの年
+*@param int $this_month カレンダーで表示するメインの月
+*@return array $calendar_y_m 表示する年月の配列
 */
 function calYearMonth($calendar_number, $this_year, $this_month){
     //当月が真ん中に来るように、$calendar_number分の年月情報$calendar_y_mを取得
@@ -29,7 +40,9 @@ function calYearMonth($calendar_number, $this_year, $this_month){
 }
 
 /**
-*カレンダーの前月、来月を返す
+*カレンダーの前月、次月リンク用の変数を返す
+*
+*@return array 中心の年月、先月の年月、次月の年月
 */
 function yearMonth(){
     //$_getで取得
@@ -54,6 +67,9 @@ function yearMonth(){
 
 /**
 *年と月の入ったコンボボックス（前後一年分）の年月を返す
+*
+*@param int $year 
+*@return array 前後一年分の年月
 */
 function comboBoxMake($year){
     $k = 0;
@@ -70,7 +86,12 @@ function comboBoxMake($year){
 
 /**
 *年と月を引数に
-*戻り値は
+*
+*@param int   $year
+*@param int   $month
+*@param array $holidays
+*@param int   $cal_f_d
+*@return array 週の情報、
 */
 function calendar($year, $month, $holidays, $cal_f_d){
     //今月の最後の日
@@ -149,8 +170,11 @@ function calendar($year, $month, $holidays, $cal_f_d){
 }
 
 /**
-*関数
 *祝日取得
+*@param int $year
+*@param int $month
+*@param int $calendar_number
+*@return array 年月日に対応した祝日の配列
 */
 function holidays($year, $month, $calendar_number){
     $count = -floor($calendar_number/2);
@@ -197,8 +221,9 @@ function holidays($year, $month, $calendar_number){
 }
 
 /**
-*関数
 *オークファンコラムフィード取得
+*
+*@return array 年月日に対応したオーくファンコラム情報
 */
 function aucColum() {
     $rss ='http://aucfan.com/article/feed/';
@@ -222,6 +247,10 @@ function aucColum() {
 
 /**
 *DBから予定取得
+*@param int $year 
+*@param int $month
+*@param int $calendar_number
+*@return array 年月日に対応した予定の情報
 */
 function schedulesGet($year, $month, $calendar_number){
 
@@ -294,6 +323,8 @@ function schedulesGet($year, $month, $calendar_number){
 
 /**
 *SESSION初期化
+*
+*@return なし
 */
 function sessionReset(){
     $_SESSION = array();
@@ -306,6 +337,9 @@ function sessionReset(){
 
 /**
 *XSS対策
+*
+*@param mixed
+*@return string  
 */
 function h($text){
     return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
@@ -313,6 +347,8 @@ function h($text){
 
 /**
 *トークンをチェック
+*
+*@return なし
 */
 function tokenCheck(){
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {

@@ -1,9 +1,10 @@
 <?php
+var_dump($_SESSION['flg']);
 session_start();
 require_once 'function.php';
 sessionReset();
 
-$cal_regi_link = 'http://192.168.33.10/calendar/cal_edit.php?';
+$cal_regi_link = 'cal_edit.php?';
 date_default_timezone_get('Asia/Tolyo');
 
 //表示するカレンダーの数
@@ -44,9 +45,27 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
     <meta charset='utf-8'>
     <title>calendar</title>
     <link rel='stylesheet' href='style.css'>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script type="text/javascript" src='edit.js'></script>
 </head>
 <body>
-
+<!-- <div class="aaaaa" style="width:500px;height:500px;margin:0 auto;background-color:blue;position:absolute;background-color: beige;
+position: absolute;
+left: 410px;
+top: 100px;
+display:none;
+">aaaa</div> -->
+<script type="text/javascript">
+// $(function(){
+//     $('table td a').click(function(){
+//         $('.aaaaa').slideToggle();
+//         return false;
+//     });
+//     $('.aaaaa').click(function(){
+//         $(this).fadeOut();
+//     });
+// });
+</script>
 <div align='center'>
     <h1>かれんだーだよ！</h1>
     <a href="?year_month=<?php echo $prev_year.'-'.$prev_month; ?>">前月</a>
@@ -76,7 +95,7 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
     <table class="calendar">
         <thead>
             <tr>
-                <th colspan='7'><?php echo $year.'年'.$month.'月' ;?></th>
+                <th id="test" colspan='7'><?php echo $year.'年'.$month.'月' ;?></th>
             </tr>
         </thead>
         <tbody>
@@ -97,7 +116,8 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
                                 <?php echo '';?>
                             <?php else :?>
                                 <a href="<?php echo $cal_regi_link.'sch_y='.$year.'&amp;sch_m='.$month.'&amp;sch_d='.$day;?> " > <?php echo $day;?> </a>
-                            <?php endif ?>
+<!--                                 <a href="javascript:void(0);" onclick="link()" > <?php echo $day;?> </a>
+ -->                            <?php endif ?>
                         </div>
                         <!-- 祝日情報 -->
                         <div class='holidayInfo'>
