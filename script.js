@@ -1,63 +1,3 @@
-// //この書き方よくわからん
-// var combo1 = function(){
-//     var year = document.info.start_y;
-//     var month = document.info.start_m;
-//     var day = document.info.start_d;
-
-//     var s_y = year.options[year.selectedIndex].value;
-//     var s_m = month.options[month.selectedIndex].value;
-//     var s_d = day.options[day.selectedIndex].value;
-
-
-//     var date = new Date(s_y, s_m, 0);
-//     var max = date.getDate();
-
-//     //初期化
-//     day.length = 0;
-
-//     for (var i = 1; i <= max; i++) {
-//         day.options[i] = new Option(i, i);
-//     }
-
-//     //0番目のよけいなoption削除
-//     day.removeChild(day.options[0]);
-//     //もし、最初に選んでいた日が、新しく生成した日付を超えていたら
-//     if (s_d > day.length) {
-//         day.options[day.length - 1].selected = true;
-//     } else {
-//         day.options[s_d - 1].selected = true;
-//     }
-// }
-
-// var combo2 = function(){
-//     var year = document.info.end_y;
-//     var month = document.info.end_m;
-//     var day = document.info.end_d;
-
-//     var s_y = year.options[year.selectedIndex].value;
-//     var s_m = month.options[month.selectedIndex].value;
-//     var s_d = day.options[day.selectedIndex].value;
-
-//     var date = new Date(s_y, s_m, 0);
-//     var max = date.getDate();
-
-//     //初期化
-//     day.length = 0;
-
-//     for (var i = 1; i <= max; i++) {
-//         day.options[i] = new Option(i, i);
-//     }
-
-
-//     //0番目のよけいなoption削除
-//     day.removeChild(day.options[0]);
-//     //もし、最初に選んでいた日が、新しく生成した日付を超えていたら
-//     if (s_d > day.length) {
-//         day.options[day.length - 1].selected = true;
-//     } else {
-//         day.options[s_d - 1].selected = true;
-//     }
-// }
 
 $(function(){
     $('.combo_year_month').change(function(){
@@ -105,7 +45,7 @@ $(function(){
 // });
 
 $(function(){
-    $('form').submit(function(){
+     $('#submit').click(function(){
         var error_count = 0;
 
         var sch_title = $('input[name="sch_title"]').val();
@@ -138,49 +78,100 @@ $(function(){
 
         var start_date = new Date(start_y, start_m, start_d, start_h, start_i);
         var end_date   = new Date(end_y, end_m, end_d, end_h, end_i);
-        console.log(start_date.getTime());
-        console.log(end_date.getTime());
+
+        var start_ymd = start_y +'-'+ start_m +'-'+ start_d;
+        var end_ymd = end_y +'-'+ end_m +'-'+ end_d;
+
         if (start_date.getTime() > end_date.getTime()) {
             $('#error_msg_date').text('＊開始日時より終了日時が先にきています');
             error_count++;
         } else {
             $('#error_msg_date').text('');
         }
+
+        //schedule_idを取得
+        var schedule_id = $('#schedule_id').text();
+
+        //エラーチェック
         if (error_count > 0) {
             return false;
         } else {
-        var start = start_y +'-'+ start_m +'-'+ start_d;
-        var end = end_y +'-'+ end_m +'-'+ end_d;
+
+            if (schedule_id == ''){
+
+                $(function(){
+                    $.ajax({
+                        type: 'post',
+                        url: 'cal_sql.php',
+                        data: {
+                            'schedule_title': sch_title,
+                            'schedule_plan' : sch_plan,
+                            'schedule_start': start_ymd,
+                            'schedule_end'  : end_ymd,
+                            'command' : 'insert'
+                        },
+                        success: function(data){
+                            alert(data);
+                        }
+                    })
+                })
+
+            } else {
+
+                $(function(){
+                    $.ajax({
+                        type: 'post',
+                        url: 'cal_sql.php',
+                        data: {
+                            'schedule_id'   : schedule_id,
+                            'schedule_title': sch_title,
+                            'schedule_plan' : sch_plan,
+                            'schedule_start': start_ymd,
+                            'schedule_end'  : end_ymd,
+                            'command' : 'update'
+                        },
+                        success: function(data){
+                            alert(data);
+                        }
+                    })
+                })
+
+            }
+
+            $('form').submit();
+        }
+    })
+})
+
+
+$(function(){
+    $('#delete').click(function(){
+        var sch_id = $('#schedule_id').text();
 
         $(function(){
             $.ajax({
                 type: 'post',
                 url: 'cal_sql.php',
                 data: {
-                    //'schedule_id' : 109,
-                    'schedule_title': sch_title,
-                    'schedule_plan' : sch_plan,
-                    'schedule_start': start,
-                    'schedule_end'  : end,
-                    'command' : 'insert'
+                    'schedule_id' : sch_id,
+                    'command' : 'delete'
                 },
                 success: function(data){
-                    alert(data);
+                    console.log(data);
                 }
             })
         })
-            return true;
-        }
+
+        $('form').submit();
     })
 })
-
-
 
 
 
 $(function(){
     $('#reset').click(function(){
         $('#schedule_edit').fadeOut();
+        return false;
     })
 })
 
@@ -191,6 +182,7 @@ $(function(){
 
 $(function(){
     $('.day').click(function(){
+        formReset();
         //tableから何年何月何日か取得
         var get_date = $(this).attr('id');
         var sch_date = get_date.split('-');
@@ -208,48 +200,53 @@ $(function(){
     })
 })
 
-
+function formReset(){
+    $('#schedule_id').text('');
+    $('input[name="sch_title"]').val('');
+    $('textarea[name="sch_plan"]').val('');
+    return;
+}
 
 function conboBoxMake(year, month, day, dd_id){
-            //関数化
-            //取得年月から正しい日数を求める
-            var s_date = new Date(year, month, 0);
-            var day_max = s_date.getDate();
+    //関数化
+    //取得年月から正しい日数を求める
+    var s_date  = new Date(year, month, 0);
+    var day_max = s_date.getDate();
 
-            var year_option = $('#'+dd_id+' .sch_year');
-            var month_option = $('#'+dd_id+' .sch_month');
-            var day_option = $('#'+dd_id+' .sch_day');
+    var year_option  = $('#'+dd_id+' .sch_year');
+    var month_option = $('#'+dd_id+' .sch_month');
+    var day_option   = $('#'+dd_id+' .sch_day');
 
-            //初期化
-            $(year_option).html('');
+    //初期化
+    $(year_option).html('');
 
-            //年option作成
-            for (var i = -1; i <= 1; i++){
-                var j = i + parseInt(year);
-                $(year_option).append('<option value="'+j+'">'+j+'</option>');
-            }
+    //年option作成
+    for (var i = -1; i <= 1; i++){
+        var j = i + parseInt(year);
+        $(year_option).append('<option value="'+j+'">'+j+'</option>');
+    }
 
-            //当年にselected
-            $('#'+dd_id+' .sch_year option[value='+year+']').attr('selected',true);
+    //当年にselected
+    $('#'+dd_id+' .sch_year option[value='+year+']').attr('selected',true);
 
-            //月は生成しなくていい
-            //当月にselected
-            $('#'+dd_id+' .sch_month option[value='+month+']').attr('selected',true);
+    //月は生成しなくていい
+    //当月にselected
+    $('#'+dd_id+' .sch_month option[value='+month+']').attr('selected',true);
 
-            //初期化
-            $(day_option).html('');
+    //初期化
+    $(day_option).html('');
 
-            //日数分option作成
-            for (var i = 1; i <= day_max; i++){
-                $(day_option).append('<option value="'+i+'">'+i+'</option>');
-            }
+    //日数分option作成
+    for (var i = 1; i <= day_max; i++){
+        $(day_option).append('<option value="'+i+'">'+i+'</option>');
+    }
 
-            //当日にselected
-            $('#'+dd_id+' .sch_day option[value='+day+']').attr('selected',true);
+    //当日にselected
+    $('#'+dd_id+' .sch_day option[value='+day+']').attr('selected',true);
 
-            //日時指定
-            //
-            return;
+    //日時指定
+    //
+    return;
 }
 
 
@@ -265,7 +262,9 @@ $(function(){
         //id="sch_id=**"の形のidを取得
         var sch_id = $(this).attr('id');
         var schedule_id = sch_id.split('=');
-        console.log(schedule_id[1]);
+
+        //div schedule_id内にschedule_idを書き込む
+        $('#schedule_id').text(schedule_id[1]);
 
         $(function(){
             $.ajax({
@@ -277,7 +276,7 @@ $(function(){
                 },
                 success: function(data){
                     var schedule_array = JSON.parse(data); 
-                    console.log(schedule_array['schedule_plan']);
+
                     var start_date = new Date(schedule_array['schedule_start']);
                     var start_y = start_date.getFullYear(),
                         start_m = start_date.getMonth() + 1,
@@ -292,60 +291,18 @@ $(function(){
                         end_h = end_date.getHours(),
                         end_i = end_date.getMinutes();
 
+                    //コンボボックス作成
                     conboBoxMake(start_y, start_m, start_d, 'start_date');
                     conboBoxMake(end_y, end_m, end_d, 'end_date');
 
+                    //inputにタイトル、内容を書き込む
                     $('#schedule_title').val(schedule_array['schedule_title']);
                     $('#schedule_plan').val(schedule_array['schedule_plan']);
                 }
             })
         })
 
-
         $('#schedule_edit').fadeIn();
     })
 })
 
-
-
-
-    // function check(){
-    //     var must = Array('sch_title', 'sch_plan');
-    //     var miss = Array('タイトル', '内容');
-    //     var leng = must.length;
-    //     var er_count = 0;
-    //     for (var i = 0; i < leng; i++) {
-    //         var obj = document.info.elements[must[i]];
-    //         if (obj.type=='text' || obj.type=='textarea' ) {
-    //             if (obj.value == '') {
-    //                  alert(miss[i] + 'は必須です');
-    //                 // document.info.elements[must[i]].focus;
-    //                 // var e = document.createElement('name');
-    //                 //     t = document.createTextNode('ないよ！')
-    //                 // document.body.appendChild(e).appendChild(t);
-    //                 er_count++;
-    //             }
-
-    //         }
-    //     }
-    //     if (er_count > 0) {
-    //         return false;
-    //     };
-    //     return true;
-    // }
-
-    // function link(){
-    //     window.open("cal_edit.php", null,'width=400, height=400, menubar=no, toolbar=no, scrollbars=yes');
-    //     return;
-    // }
-
-    //     <script type="text/javascript">
-    // function link(){
-    // var y = <?php echo $year; ?>,
-    //     m = <?php echo $month; ?>,
-    //     d = <?php echo $day; ?>;
-    //     url = 'cal_edit.php?sch_y='+y+'&sch_m='+m+'&sch_d='+d;
-    //     window.open(url, null,'width=400, height=400, menubar=no, toolbar=no, scrollbars=yes');
-    // return;
-    // }
-    // </script>

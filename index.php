@@ -51,12 +51,13 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
 <h1>予定編集画面</h1>
 <form action="" name="info" method="POST">
     <dl>
+    <!-- <div id="schedule_id" style="display:none;"></div> -->
+    <div id="schedule_id" style=""></div>
         <dt>
             予定開始日
         </dt>
         <dd id="start_date">
-<!--             <select name="start_y" class="combo_year_month sch_year" onchange="combo1();">
- -->            <select name="start_y" class="combo_year_month sch_year">
+            <select name="start_y" class="combo_year_month sch_year">
                 <?php for ($i = 1; $i <=3; $i++):?>
                     <option value="<?php echo $i;?>"><?php echo $i;?></option>
                 <?php endfor;?>
@@ -92,13 +93,13 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
             予定終了日
         </dt>
         <dd id="end_date">
-            <select name="end_y" class="combo_year_month sch_year" onchange="combo2();">
+            <select name="end_y" class="combo_year_month sch_year">
                 <?php for ($i = 1; $i <=3; $i++):?>
                     <option value="<?php echo $i;?>"><?php echo $i;?></option>
                 <?php endfor;?>
             </select>
             年
-            <select name="end_m" class="combo_year_month sch_month"　onchange="combo2();">
+            <select name="end_m" class="combo_year_month sch_month">
                 <?php for ($i = 1; $i <=12; $i++):?>
                     <option value="<?php echo $i;?>"><?php echo $i;?></option>
                 <?php endfor;?>
@@ -141,10 +142,10 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
         </dd>
             <span id="error_msg_plan"></span>
     </dl>
-    <input type="submit" name="submit" value="保存">
-    <input type="submit" name="submit" value="削除">
+    <button name="submit" id="submit">保存</button>
+    <button name="delete" id="delete">削除</button>
+    <button name="reset" id="reset">キャンセル</button>
 </form>
-<button name="reset" id="reset">キャンセル</button>
 
 </div>
 
