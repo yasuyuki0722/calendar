@@ -8,7 +8,7 @@ require_once 'function.php';
 <html lang="ja">
 <head>
     <meta charset="utf-8">
-    <title>calendar</title>
+    <title>calendar_check</title>
 </head>
 <body>
 <?php if ($_SESSION['command'] == 'delete'):?>

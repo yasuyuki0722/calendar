@@ -161,40 +161,33 @@ $combo_y_m = comboBoxMake($_SESSION['schedule']['start_y']);
             予定開始日
         </dt>
         <dd>
-            <select name="start_y_m">
-            <?php foreach ($combo_y_m as $value):?>
-                <?php if ($value['year'] == $_SESSION['schedule']['start_y'] && $value['month'] == $_SESSION['schedule']['start_m']):?>
-                    <option value="<?php echo $value['year'].'-'.$value['month'];?>" selected><?php echo $value['year'].'年'.$value['month'].'月'?></option>
-                <?php else:?>
-                    <option value="<?php echo  $value['year'].'-'.$value['month'];?>"><?php echo $value['year'].'年'.$value['month'].'月';?></option>
-                <?php endif;?>
-            <?php endforeach;?>
+            <select name="a" onchange="combo1();">
+                <?php for ($i = 1; $i <=3; $i++):?>
+                    <option value="<?php echo $i;?>"><?php echo $i;?></option>
+                <?php endfor;?>
             </select>
+            年
+            <select name="b" onchange="combo1();">
+                <?php for ($i = 1; $i <=12; $i++):?>
+                    <option value="<?php echo $i;?>"><?php echo $i;?></option>
+                <?php endfor;?>
+            </select>
+            月
             <select name="start_d">
                 <?php for ($i = 1; $i <= 31; $i++):?>
-                    <?php if ($i == $_SESSION['schedule']['start_d']):?>
-                        <option value="<?php echo $i;?>" selected><?php echo $i;?>日</option>
-                    <?php else:?>
-                        <option value="<?php echo $i;?>"><?php echo $i;?>日</option>
-                    <?php endif;?>
+                        <option value="<?php echo $i;?>"><?php echo $i;?></option>
                 <?php endfor;?>
             </select>
+            日
             <select name="start_h">
                 <?php for ($i = 0; $i <= 23; $i++):?>
-                    <?php if ($i == $_SESSION['schedule']['start_h']):?>
-                        <option value="<?php echo $i;?>" selected><?php echo $i;?>時</option>
-                    <?php else:?>
-                        <option value="<?php echo $i;?>"><?php echo $i;?>時</option>
-                    <?php endif;?>
+                        <option value="<?php echo $i;?>"><?php echo $i;?></option>
                 <?php endfor;?>
             </select>
+            時
             <select name="start_i">
                 <?php for ($i = 0; $i <=30; $i = $i + 30):?>
-                    <?php if ($i == $_SESSION['schedule']['start_i']):?>
-                        <option value="<?php echo $i;?>" selected><?php echo $i;?>分</option>
-                    <?php else:?>
                         <option value="<?php echo $i;?>"><?php echo $i;?>分</option>
-                    <?php endif;?>
                 <?php endfor;?>
             </select>
         </dd>

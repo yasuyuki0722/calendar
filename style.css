@@ -18,6 +18,18 @@ a:visited{
     color: black;
 }
 
+#schedule_edit{
+/*    width:500px;
+    height:500px;*/
+    top: 100px;
+    margin:0 auto;
+    background-color:lightgreen;
+    position:absolute;
+    left: 410px;
+    text-align: left;
+    display:none;
+}
+
 .calendar{
     vertical-align:top; 
     display: inline-block;
