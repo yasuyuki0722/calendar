@@ -184,10 +184,10 @@ $(function(){
     })
 })
 
+
 //日付クリックされたら
 //日付を取得する
 //その年月日のコンボボックスを正しく取得
-//
 
 $(function(){
     $('.day').click(function(){
@@ -201,107 +201,8 @@ $(function(){
             end_month = sch_date[1],
             end_day = sch_date[2];
 
-        console.log(get_date);
-        console.log(sch_date);
-        console.log(end_day);
-
-
-        // //関数化
-        // //取得年月から正しい日数を求める
-        // var s_date = new Date(start_year, start_month, 0);
-        // var start_day_max = s_date.getDate();
-        // //取得年月から正しい日数を求める
-        // var e_date = new Date(end_year, end_month, 0);
-        // var end_day_max = e_date.getDate();
-
-        // var start_year_option = $('#start_date .sch_year');
-        // var start_month_option = $('#start_date .sch_month');
-        // var start_day_option = $('#start_date .sch_day');
-
-        // console.log(start_year_option);
-        // //初期化
-        // $(start_year_option).html('');
-
-        // //年option作成
-        // for (var i = -1; i <= 1; i++){
-        //     var j = i + parseInt(start_year);
-        //     $(start_year_option).append('<option value="'+j+'">'+j+'</option>');
-        // }
-
-        // //当年にselected
-        // $('#start_date .sch_year option[value='+start_year+']').attr('selected',true);
-
-        // //当月にselected
-        // $('#start_date .sch_month option[value='+start_month+']').attr('selected',true);
-
-        // //初期化
-        // $(start_day_option).html('');
-
-        // //日数分option作成
-        // for (var i = 1; i <= start_day_max; i++){
-        //     $(start_day_option).append('<option value="'+i+'">'+i+'</option>');
-        // }
-
-        // //当日にselected
-        // $('#start_date .sch_day option[value='+start_day+']').attr('selected',true);
         conboBoxMake(start_year, start_month, start_day, 'start_date');
         conboBoxMake(end_year, end_month, end_day, 'end_date');
-
-        // //初期化
-        // $(end_year_option).html('');
-
-        // //年option作成
-        // for (var i = -1; i <= 1; i++){
-        //     $(end_year_option).append('<option value="'+i+'">'+i+'</option>');
-        // }
-
-        // //当年にselected
-        // $(start_end_option+' option[value='+end_year+']').attr('selected',true);
-
-        // //当月にselected
-        // $(end_month_option+' option[value='+end_month+']').attr('selected',true);
-
-
-        // //日数分option作成
-        // for (var i = 1; i <= end_day_max; i++){
-        //     $('.end_date .sch_day').append('<option value="'+i+'">'+i+'</option>');
-        // }
-
-        // //当日にselected
-        // $(end_day_option+' option[value='+end_day+']').attr('selected',true);
-
-        // //取得した年の+-1年のコンボボックスを作成
-        // var start_year = document.info.start_y;
-
-        // start_year.length = 0;
-
-        // for (var i = -1; i <= 1; i++) {
-        //     var j = i + 1;
-        //     start_year.options[j] = new Option(parseInt(sch_date[0]) + i);
-        // }
-
-        // document.info.start_y.options[1].selected = true;
-
-        // //取得した年の+-1年のコンボボックスを作成
-        // var end_year = document.info.end_y;
-        // // var e_y = year.options[year.selectedIndex].value;
-
-        // end_year.length = 0;
-
-        // for (var i = -1; i <= 1; i++) {
-        //     var j = i + 1;
-        //     end_year.options[j] = new Option(parseInt(sch_date[0]) + i);
-        // }
-        // document.info.end_y.options[1].selected = true;
-
-
-        // //月にselectedをつける
-        // document.info.start_m.options[parseInt(sch_date[1]) - 1].selected = true;
-        // document.info.end_m.options[parseInt(sch_date[1]) - 1].selected = true;
-
-        // //日付にselectedをつける
-        // document.info.start_d.options[parseInt(sch_date[2]) - 1].selected = true;
-        // document.info.end_d.options[parseInt(sch_date[2]) - 1].selected = true;
 
         $('#schedule_edit').fadeIn();
     })
@@ -319,7 +220,6 @@ function conboBoxMake(year, month, day, dd_id){
             var month_option = $('#'+dd_id+' .sch_month');
             var day_option = $('#'+dd_id+' .sch_day');
 
-            console.log(year_option);
             //初期化
             $(year_option).html('');
 
@@ -332,6 +232,7 @@ function conboBoxMake(year, month, day, dd_id){
             //当年にselected
             $('#'+dd_id+' .sch_year option[value='+year+']').attr('selected',true);
 
+            //月は生成しなくていい
             //当月にselected
             $('#'+dd_id+' .sch_month option[value='+month+']').attr('selected',true);
 
@@ -345,6 +246,9 @@ function conboBoxMake(year, month, day, dd_id){
 
             //当日にselected
             $('#'+dd_id+' .sch_day option[value='+day+']').attr('selected',true);
+
+            //日時指定
+            //
             return;
 }
 
@@ -373,22 +277,24 @@ $(function(){
                 },
                 success: function(data){
                     var schedule_array = JSON.parse(data); 
-                    console.log(schedule_array['schedule_start']);
+                    console.log(schedule_array['schedule_plan']);
                     var start_date = new Date(schedule_array['schedule_start']);
                     var start_y = start_date.getFullYear(),
-                        start_m = start_date.getMonth(),
+                        start_m = start_date.getMonth() + 1,
                         start_d = start_date.getDate(),
                         start_h = start_date.getHours(),
                         start_i = start_date.getMinutes();
 
                     var end_date = new Date(schedule_array['schedule_end']);
                     var end_y = end_date.getFullYear(),
-                        end_m = end_date.getMonth(),
+                        end_m = end_date.getMonth() + 1,
                         end_d = end_date.getDate(),
                         end_h = end_date.getHours(),
                         end_i = end_date.getMinutes();
 
-                    console.log(end_d);
+                    conboBoxMake(start_y, start_m, start_d, 'start_date');
+                    conboBoxMake(end_y, end_m, end_d, 'end_date');
+
                     $('#schedule_title').val(schedule_array['schedule_title']);
                     $('#schedule_plan').val(schedule_array['schedule_plan']);
                 }

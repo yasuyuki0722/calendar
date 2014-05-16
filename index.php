@@ -137,7 +137,7 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
             内容
         </dt>
         <dd>
-            <textarea name="sch_plan"></textarea> 
+            <textarea name="sch_plan" value="" id="schedule_plan"></textarea> 
         </dd>
             <span id="error_msg_plan"></span>
     </dl>
