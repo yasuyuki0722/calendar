@@ -2,6 +2,7 @@
 body{
     text-align: center;
     margin: 0 auto;
+
 /*    font-family:HelveticaNeue-LightItalic;*/
 }
 
@@ -18,21 +19,35 @@ a:visited{
     color: black;
 }
 
+#shadow{
+    width: 100%;
+    height: 100%;
+    display: none;
+    position: fixed;
+    opacity: 0.5;
+    background-color: black;
+    z-index: 10;
+/*                -webkit-filter:blur(2px);
+*/
+
+}
+
 #schedule_edit{
 /*    width:500px;
     height:500px;*/
     top: 100px;
     margin:0 auto;
-    background-color:lightgreen;
+    background-color:mintcream;
     position:absolute;
-    left: 410px;
     text-align: left;
     display:none;
+    z-index: 99;
 }
 
 .calendar{
     vertical-align:top; 
     display: inline-block;
+
 }
 
 td{
@@ -77,10 +92,6 @@ th{
     font-size: 60%;
 }
 
-.weekday_holiday {
-    color: red;
-}
-
 .holidayInfo {
     width: 70px;
     font-size: 11px;
@@ -105,3 +116,4 @@ th{
     overflow: hidden;
     text-overflow: ellipsis;
 }
+

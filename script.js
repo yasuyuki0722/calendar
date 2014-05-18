@@ -79,8 +79,8 @@ $(function(){
         var start_date = new Date(start_y, start_m, start_d, start_h, start_i);
         var end_date   = new Date(end_y, end_m, end_d, end_h, end_i);
 
-        var start_ymd = start_y +'-'+ start_m +'-'+ start_d;
-        var end_ymd = end_y +'-'+ end_m +'-'+ end_d;
+        var start_ymd = start_y +'-'+ start_m +'-'+ start_d+'-'+start_h +'-'+ start_i;
+        var end_ymd = end_y +'-'+ end_m +'-'+ end_d+'-'+ end_h +'-'+ end_i;
 
         if (start_date.getTime() > end_date.getTime()) {
             $('#error_msg_date').text('＊開始日時より終了日時が先にきています');
@@ -108,7 +108,7 @@ $(function(){
                             'schedule_plan' : sch_plan,
                             'schedule_start': start_ymd,
                             'schedule_end'  : end_ymd,
-                            'command' : 'insert'
+                            'command'       : 'insert'
                         },
                         success: function(data){
                             alert(data);
@@ -128,7 +128,7 @@ $(function(){
                             'schedule_plan' : sch_plan,
                             'schedule_start': start_ymd,
                             'schedule_end'  : end_ymd,
-                            'command' : 'update'
+                            'command'       : 'update'
                         },
                         success: function(data){
                             alert(data);
@@ -166,11 +166,18 @@ $(function(){
     })
 })
 
-
+$(function(){
+    $('#shadow').click(function(){
+        $('#schedule_edit').fadeOut();
+        $('#shadow').fadeOut();
+    })
+})
 
 $(function(){
     $('#reset').click(function(){
         $('#schedule_edit').fadeOut();
+        $('#shadow').fadeOut();
+
         return false;
     })
 })
@@ -183,6 +190,7 @@ $(function(){
 $(function(){
     $('.day').click(function(){
         formReset();
+        $('#delete').css('display','none');
         //tableから何年何月何日か取得
         var get_date = $(this).attr('id');
         var sch_date = get_date.split('-');
@@ -193,10 +201,11 @@ $(function(){
             end_month = sch_date[1],
             end_day = sch_date[2];
 
-        conboBoxMake(start_year, start_month, start_day, 'start_date');
-        conboBoxMake(end_year, end_month, end_day, 'end_date');
+        comboBoxMake(start_year, start_month, start_day, 0, 0,'start_date');
+        comboBoxMake(end_year, end_month, end_day, 0, 0, 'end_date');
 
         $('#schedule_edit').fadeIn();
+        $('#shadow').fadeIn();
     })
 })
 
@@ -204,10 +213,15 @@ function formReset(){
     $('#schedule_id').text('');
     $('input[name="sch_title"]').val('');
     $('textarea[name="sch_plan"]').val('');
-    return;
+    $('#error_msg_date').text('');
+    $('#error_msg_title').text('');
+    $('#error_msg_plan').text('');
+
+    //削除ボタン表示
+    $('#delete').css('display','');
 }
 
-function conboBoxMake(year, month, day, dd_id){
+function comboBoxMake(year, month, day, hour, minute, dd_id){
     //関数化
     //取得年月から正しい日数を求める
     var s_date  = new Date(year, month, 0);
@@ -216,6 +230,8 @@ function conboBoxMake(year, month, day, dd_id){
     var year_option  = $('#'+dd_id+' .sch_year');
     var month_option = $('#'+dd_id+' .sch_month');
     var day_option   = $('#'+dd_id+' .sch_day');
+    var hour_option     = $('#'+dd_id+' .sch_hour');
+    var minute_option   = $('#'+dd_id+' .sch_minute');
 
     //初期化
     $(year_option).html('');
@@ -244,8 +260,28 @@ function conboBoxMake(year, month, day, dd_id){
     //当日にselected
     $('#'+dd_id+' .sch_day option[value='+day+']').attr('selected',true);
 
-    //日時指定
-    //
+    //初期化
+    $(hour_option).html('');
+
+    //時刻分option作成
+    for (var i = 0; i <= 23; i++){
+        $(hour_option).append('<option value="'+i+'">'+i+'</option>');
+    }
+
+    //当時刻にselected
+    $('#'+dd_id+' .sch_hour option[value='+hour+']').attr('selected',true);
+
+    //初期化
+    $(minute_option).html('');
+
+    //時刻分option作成
+    for (var i = 0; i <= 30; i+=30){
+        $(minute_option).append('<option value="'+i+'">'+i+'</option>');
+    }
+
+    //当時刻にselected
+    $('#'+dd_id+' .sch_minute option[value='+minute+']').attr('selected',true);
+
     return;
 }
 
@@ -259,6 +295,7 @@ function conboBoxMake(year, month, day, dd_id){
 
 $(function(){
     $('.calendar_schedule').click(function(){
+        formReset();
         //id="sch_id=**"の形のidを取得
         var sch_id = $(this).attr('id');
         var schedule_id = sch_id.split('=');
@@ -291,9 +328,12 @@ $(function(){
                         end_h = end_date.getHours(),
                         end_i = end_date.getMinutes();
 
+                        console.log(end_h);
+                        console.log(end_i);
+
                     //コンボボックス作成
-                    conboBoxMake(start_y, start_m, start_d, 'start_date');
-                    conboBoxMake(end_y, end_m, end_d, 'end_date');
+                    comboBoxMake(start_y, start_m, start_d, start_h, start_i, 'start_date');
+                    comboBoxMake(end_y, end_m, end_d, end_h, end_i, 'end_date');
 
                     //inputにタイトル、内容を書き込む
                     $('#schedule_title').val(schedule_array['schedule_title']);
@@ -303,6 +343,8 @@ $(function(){
         })
 
         $('#schedule_edit').fadeIn();
+        $('#shadow').fadeIn();
+
     })
 })
 

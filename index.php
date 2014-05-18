@@ -3,7 +3,6 @@ session_start();
 require_once 'function.php';
 sessionReset();
 
-$cal_regi_link = 'cal_edit.php?';
 date_default_timezone_get('Asia/Tolyo');
 
 //表示するカレンダーの数
@@ -47,12 +46,13 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 </head>
 <body>
-<div id="schedule_edit" >
+<div id="shadow"></div>
+<div id="schedule_edit" align="center" >
 <h1>予定編集画面</h1>
 <form action="" name="info" method="POST">
     <dl>
-    <!-- <div id="schedule_id" style="display:none;"></div> -->
-    <div id="schedule_id" style=""></div>
+    <!-- schedule_id用 -->
+    <div id="schedule_id" style="display:none;"></div>
         <dt>
             予定開始日
         </dt>
@@ -75,13 +75,13 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
                 <?php endfor;?>
             </select>
             日
-            <select name="start_h">
+            <select name="start_h" class="sch_hour">
                 <?php for ($i = 0; $i <= 23; $i++):?>
                         <option value="<?php echo $i;?>"><?php echo $i;?></option>
                 <?php endfor;?>
             </select>
             時
-            <select name="start_i">
+            <select name="start_i" class="sch_minute">
                 <?php for ($i = 0; $i <=30; $i = $i + 30):?>
                         <option value="<?php echo $i;?>"><?php echo $i;?></option>
                 <?php endfor;?>
@@ -111,22 +111,20 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
                 <?php endfor;?>
             </select>
             日
-            <select name="end_h">
+            <select name="end_h" class="sch_hour">
                 <?php for ($i = 0; $i <= 23; $i++):?>
                         <option value="<?php echo $i;?>"><?php echo $i;?></option>
                 <?php endfor;?>
             </select>
             時
-            <select name="end_i">
+            <select name="end_i" class="sch_minute">
                 <?php for ($i = 0; $i <=30; $i = $i + 30):?>
                         <option value="<?php echo $i;?>"><?php echo $i;?></option>
                 <?php endfor;?>
             </select>
             分
         </dd>
-
             <span id="error_msg_date"></span>
-
         <dt>
             予定タイトル
         </dt>
@@ -207,11 +205,10 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
                     <?php $day = $week[$year][$month][$j][$i];?>
                     <td class="<?php echo $day_class[$year][$month][$j][$i]['W'];?>">
                         <!-- 日付情報 -->
-                        <div class="<?php echo $day_class[$year][$month][$j][$i]['Today'];?>">
+                        <div class="<?php echo $day_class[$year][$month][$j][$i]['Today'];?>" onmouseover="this.style.backgroundColor='orange'" onmouseout="this.style.backgroundColor=''">
                             <?php if (isset($day) == false) :?>
                                 <?php echo '';?>
                             <?php else :?>
-<!--                                 <a href="<?php// echo $cal_regi_link.'sch_y='.$year.'&amp;sch_m='.$month.'&amp;sch_d='.$day;?> " > <?php// echo $day;?> </a>-->
                                 <div class="day" id="<?php echo $year.'-'.$month.'-'.$day;?>"><?php echo $day;?></div>
                             <?php endif ?>
                         </div>
@@ -232,8 +229,7 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
                         <?php if ($day_class[$year][$month][$j][$i]['W'] != 'not') :?>
                             <?php if (isset($schedule[$year][$month][$day])) :?>
                                 <?php foreach ($schedule[$year][$month][$day] as $key => $value) :?> 
-<!--                                     <a href="<?php// echo 'cal_edit.php?sch_y='.$year.'&amp;sch_m='.$month.'&amp;sch_d='.$day.'&amp;sch_id='.$key ;?>" title = '<?php //echo h($value['plan']);?>'> <?php// echo '-'.h($value['title']);?><br></a>-->
-                                    <div class="calendar_schedule" id="<?php echo 'sch_id='.$key ;?>"> <?php echo '-'.h($value['title']);?><br></div>
+                                    <div class="calendar_schedule" id="<?php echo 'sch_id='.$key ;?>" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration=''"> <?php echo '-'.h($value['title']);?><br></div>
                                 <?php endforeach;?>
                             <?php endif ;?>
                         <?php endif;?>
