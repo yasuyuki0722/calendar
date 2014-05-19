@@ -6,9 +6,9 @@ sessionReset();
 date_default_timezone_get('Asia/Tolyo');
 
 //表示するカレンダーの数
-$calendar_number = 3;
-//カレンダーの先頭の曜日(sun=7, mon = 6)
-$calendar_first_day = 7;
+$calendar_number = 6;
+//カレンダーの先頭の曜日(sun=0, mon = 1,,,sat=6)
+$calendar_first_day = 1;
 
 //曜日設定
 $weekday_index = weekdaySet($calendar_first_day);

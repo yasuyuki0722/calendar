@@ -7,11 +7,11 @@
 *@return array $weekday_index
 */
 
-function weekdaySet($calendar_first_d){
+function weekdaySet($calendar_first_day){
     $w_index = array('日', '月', '火', '水', '木', '金', '土');
     $weekday_index = array();
     for ($i = 0; $i <= 6; $i++) { 
-        $j = ($i + (7 - $calendar_first_d)) % 7;
+        $j = ($i + $calendar_first_day) % 7;
         $weekday_index[$i] = $w_index[$j];
     }
     return $weekday_index;
@@ -90,10 +90,10 @@ function comboBoxMake($year){
 *@param int   $year
 *@param int   $month
 *@param array $holidays
-*@param int   $cal_f_d
+*@param int   $calendar_first_day
 *@return array 週の情報、
 */
-function calendar($year, $month, $holidays, $cal_f_d){
+function calendar($year, $month, $holidays, $calendar_first_day){
     //今月の最後の日
     $lastday = date('t', mktime(0, 0, 0, $month, 1, $year));
     //今月の最初の曜日(0 ~ 6)から始める
@@ -101,7 +101,7 @@ function calendar($year, $month, $holidays, $cal_f_d){
     //$weekに日付を代入
     $week_number = 0;
     //mod7で日付をずらす
-    $day_count = ($weekday_count + $cal_f_d) % 7;
+    $day_count = abs($weekday_count - $calendar_first_day) % 7;
     //前月の日付を入れる
     $last_d = date('t', mktime(0, 0, 0, $month - 1, 1, $year));
     for ($i = 0; $i < $day_count; $i++) { 
@@ -123,7 +123,7 @@ function calendar($year, $month, $holidays, $cal_f_d){
         //何年、何月、何日＝＞何曜日（不要？）
         //$weekday[$year][$month][$i] = $weekday_count;
         //土、日の判断
-        switch (((7 - $cal_f_d) + $day_count) % 7) {
+        switch (($calendar_first_day + $day_count) % 7) {
             case 0:
                 $day_class[$year][$month][$week_number][$day_count]['W'] = 'Sun';
                 break;
