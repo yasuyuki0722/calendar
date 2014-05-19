@@ -5,6 +5,8 @@ sessionReset();
 
 date_default_timezone_get('Asia/Tolyo');
 
+echo 'hello world';
+
 //表示するカレンダーの数
 $calendar_number = 3;
 //カレンダーの先頭の曜日(sun=0, mon = 1,,,sat=6)
