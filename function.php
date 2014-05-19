@@ -103,16 +103,12 @@ function calendar($year, $month, $holidays, $calendar_first_day){
     //mod7で日付をずらす
     $day_count = abs($weekday_count - $calendar_first_day) % 7;
     //前月の日付を入れる
-    // $last_d = date('t', mktime(0, 0, 0, $month - 1, 1, $year));
-    // for ($i = 0; $i < $day_count; $i++) { 
-    //     $week[$year][$month][$week_number][$i] = $last_d - ($day_count - $i - 1);
-    //     $day_class[$year][$month][$week_number][$i]['weekday_index'] = 'not';
-    // }
 
     for ($i = 0; $i < $day_count; $i++) { 
-        $week[$year][$month][$week_number][$i]['y'] = date('Y', mktime(0, 0, 0, $month, -$i, $year));
-        $week[$year][$month][$week_number][$i]['m'] = date('n', mktime(0, 0, 0, $month, -$i, $year));
-        $week[$year][$month][$week_number][$i]['d'] = date('j', mktime(0, 0, 0, $month, -$i, $year));
+        $cell_count = $day_count - 1 - $i;
+        $week[$year][$month][$week_number][$cell_count]['y'] = date('Y', mktime(0, 0, 0, $month, -$i, $year));
+        $week[$year][$month][$week_number][$cell_count]['m'] = date('n', mktime(0, 0, 0, $month, -$i, $year));
+        $week[$year][$month][$week_number][$cell_count]['d'] = date('j', mktime(0, 0, 0, $month, -$i, $year));
 
         $day_class[$year][$month][$week_number][$i]['weekday_index'] = 'not';
     }
@@ -156,11 +152,6 @@ function calendar($year, $month, $holidays, $calendar_first_day){
     //来月の日付を入れる
     if ($day_count != 0) {
         $next_d = 1;
-        // for ($i = $day_count; $i < 7; $i++) { 
-        //     $week[$year][$month][$week_number][$i] = $next_d;
-        //     $day_class[$year][$month][$week_number][$i]['weekday_index'] = 'not';
-        //     $next_d++;
-        // }
 
         for ($i = $day_count; $i < 7; $i++) { 
             $week[$year][$month][$week_number][$i]['y'] = date('Y', mktime(0, 0, 0, $month + 1, 1, $year));
