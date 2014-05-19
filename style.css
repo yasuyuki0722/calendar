@@ -3,7 +3,6 @@ body{
     text-align: center;
     margin: 0 auto;
 
-/*    font-family:HelveticaNeue-LightItalic;*/
 }
 
 a{
@@ -28,20 +27,10 @@ a:visited{
     opacity: 0.5;
     background-color: black;
     z-index: 50;
-/*                -webkit-filter:blur(2px);
-*/
+
 
 }
-/*#form{
-    height:400px;
-    width: 500px;
-    margin:0 auto;
-    text-align: center;
-    background-color: skyblue;
-    z-index: 100;
-    display: none;
-}
-*/
+
 #schedule_edit{
     top: 50%;
     left: 50%;
