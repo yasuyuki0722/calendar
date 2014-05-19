@@ -104,9 +104,6 @@ $(function(){
                         success: function(data){
                         },
                         error: function(XMLHttpRequest, textStatus, errorThrown){
-                            alert('Error : ', + errorThrown.message);
-                            alert('Error : ', + XMLHttpRequest.status);
-                            alert('Error : ', + textStatus);
                         }
                     })
                 })
@@ -128,7 +125,6 @@ $(function(){
                         success: function(data){
                         },
                         error: function(XMLHttpRequest, textStatus, errorThrown){
-                            alert('通信エラー');
                         }
                     })
                 })
@@ -156,7 +152,6 @@ $(function(){
                 success: function(data){
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown){
-                    alert('通信エラー');
                 }
             })
         })
@@ -342,7 +337,6 @@ $(function(){
                     $('#schedule_plan').val(schedule_array['schedule_plan']);
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown){
-                    alert('通信エラー');
                 }
 
             })
