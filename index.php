@@ -6,9 +6,9 @@ sessionReset();
 date_default_timezone_get('Asia/Tolyo');
 
 //表示するカレンダーの数
-$calendar_number = 6;
+$calendar_number = 3;
 //カレンダーの先頭の曜日(sun=0, mon = 1,,,sat=6)
-$calendar_first_day = 1;
+$calendar_first_day = 0;
 
 //曜日設定
 $weekday_index = weekdaySet($calendar_first_day);
@@ -26,8 +26,9 @@ $calendar_y_m = calYearMonth($calendar_number, $this_year, $this_month);
 $combo_y_m = comboBoxMake($this_year);
 
 //カレンダー
+$calendar_make = array();
 foreach ($calendar_y_m as $value) {
-    $calendar_make[] = array(calendar($value['calendar_y'], $value['calendar_m'], $holidays, $calendar_first_day));
+    array_push($calendar_make, calendar($value['calendar_y'], $value['calendar_m'], $holidays, $calendar_first_day));
 }
 
 //オークションコラム
@@ -35,6 +36,9 @@ $auc_colum = aucColum();
 
 //予定
 $schedule = schedulesGet($this_year, $this_month, $calendar_number);
+
+// var_dump($calendar_make);
+//exit();
 ?>
 
 <!DOCTYPE html>
@@ -47,119 +51,80 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
 </head>
 <body>
 <div id="shadow"></div>
-<div id="schedule_edit" align="center" >
-<h1>予定編集画面</h1>
-<form action="" name="info" method="POST">
-    <dl>
-    <!-- schedule_id用 -->
-    <div id="schedule_id" style="display:none;"></div>
-        <dt>
-            予定開始日
-        </dt>
-        <dd id="start_date">
-            <select name="start_y" class="combo_year_month sch_year">
-                <?php for ($i = 1; $i <=3; $i++):?>
-                    <option value="<?php echo $i;?>"><?php echo $i;?></option>
-                <?php endfor;?>
-            </select>
-            年
-            <select name="start_m" class="combo_year_month sch_month">
-                <?php for ($i = 1; $i <=12; $i++):?>
-                    <option value="<?php echo $i;?>"><?php echo $i;?></option>
-                <?php endfor;?>
-            </select>
-            月
-            <select name="start_d" class="sch_day">
-                <?php for ($i = 1; $i <= 31; $i++):?>
-                        <option value="<?php echo $i;?>"><?php echo $i;?></option>
-                <?php endfor;?>
-            </select>
-            日
-            <select name="start_h" class="sch_hour">
-                <?php for ($i = 0; $i <= 23; $i++):?>
-                        <option value="<?php echo $i;?>"><?php echo $i;?></option>
-                <?php endfor;?>
-            </select>
-            時
-            <select name="start_i" class="sch_minute">
-                <?php for ($i = 0; $i <=30; $i = $i + 30):?>
-                        <option value="<?php echo $i;?>"><?php echo $i;?></option>
-                <?php endfor;?>
-            </select>
-            分
-        </dd>
+<div id="schedule_edit">
+    <div id="form">
+    <h1>予定編集画面</h1>
+    <form action="" name="info" method="POST">
+        <dl id="form_list">
+        <!-- schedule_id用 -->
+        <div id="schedule_id" style="display:none;"></div>
+            <dt>
+                予定開始日
+            </dt>
+            <dd id="start_date">
+                <select name="start_y" class="combo_year_month sch_year">
+                </select>
+                年
+                <select name="start_m" class="combo_year_month sch_month">
+                </select>
+                月
+                <select name="start_d" class="sch_day">
+                </select>
+                日
+                <select name="start_h" class="sch_hour">
+                </select>
+                時
+                <select name="start_i" class="sch_minute">
+                </select>
+                分
+            </dd>
 
-        <dt>
-            予定終了日
-        </dt>
-        <dd id="end_date">
-            <select name="end_y" class="combo_year_month sch_year">
-                <?php for ($i = 1; $i <=3; $i++):?>
-                    <option value="<?php echo $i;?>"><?php echo $i;?></option>
-                <?php endfor;?>
-            </select>
-            年
-            <select name="end_m" class="combo_year_month sch_month">
-                <?php for ($i = 1; $i <=12; $i++):?>
-                    <option value="<?php echo $i;?>"><?php echo $i;?></option>
-                <?php endfor;?>
-            </select>
-            月
-            <select name="end_d" class="sch_day">
-                <?php for ($i = 1; $i <= 31; $i++):?>
-                        <option value="<?php echo $i;?>"><?php echo $i;?></option>
-                <?php endfor;?>
-            </select>
-            日
-            <select name="end_h" class="sch_hour">
-                <?php for ($i = 0; $i <= 23; $i++):?>
-                        <option value="<?php echo $i;?>"><?php echo $i;?></option>
-                <?php endfor;?>
-            </select>
-            時
-            <select name="end_i" class="sch_minute">
-                <?php for ($i = 0; $i <=30; $i = $i + 30):?>
-                        <option value="<?php echo $i;?>"><?php echo $i;?></option>
-                <?php endfor;?>
-            </select>
-            分
-        </dd>
-            <span id="error_msg_date"></span>
-        <dt>
-            予定タイトル
-        </dt>
-        <dd>
-            <input type="text" name="sch_title" value="" id="schedule_title">
-        </dd>
-            <span id="error_msg_title"></span>
-        <dt>
-            内容
-        </dt>
-        <dd>
-            <textarea name="sch_plan" value="" id="schedule_plan"></textarea> 
-        </dd>
-            <span id="error_msg_plan"></span>
-    </dl>
-    <button name="submit" id="submit">保存</button>
-    <button name="delete" id="delete">削除</button>
-    <button name="reset" id="reset">キャンセル</button>
-</form>
-
+            <dt>
+                予定終了日
+            </dt>
+            <dd id="end_date">
+                <select name="end_y" class="combo_year_month sch_year">
+                </select>
+                年
+                <select name="end_m" class="combo_year_month sch_month">
+                </select>
+                月
+                <select name="end_d" class="sch_day">
+                </select>
+                日
+                <select name="end_h" class="sch_hour">
+                </select>
+                時
+                <select name="end_i" class="sch_minute">
+                </select>
+                分
+            </dd>
+                <span id="error_msg_date"></span>
+            <dt>
+                予定タイトル
+            </dt>
+            <dd>
+                <input type="text" name="sch_title" value="" id="schedule_title">
+            </dd>
+                <span id="error_msg_title"></span>
+            <dt>
+                内容
+            </dt>
+            <dd>
+                <textarea name="sch_plan" value="" id="schedule_plan"></textarea> 
+            </dd>
+                <span id="error_msg_plan"></span>
+        </dl>
+        <button name="submit" id="submit">保存</button>
+        <button name="delete" id="delete">削除</button>
+        <button name="reset" id="reset">キャンセル</button>
+    </form>
+    </div>
 </div>
 
-
+<div>
 <script type="text/javascript" src='script.js'></script>
-<script type="text/javascript">
-// $(function(){
-//     $('table td a').click(function(){
-//         $('.aaaaa').slideToggle();
-//         return false;
-//     });
-//     $('.aaaaa').click(function(){
-//         $(this).fadeOut();
-//     });
-// });
-</script>
+
 <div align='center'>
     <h1>かれんだーだよ！</h1>
     <a href="?year_month=<?php echo $prev_year.'-'.$prev_month; ?>">前月</a>
@@ -180,11 +145,11 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
 </div>
 <?php foreach ($calendar_make as $value) :?>
     <?php
-    $week  = $value[0]['week'];
-    $year  = $value[0]['year'];
-    $month = $value[0]['month'];
-    $weekday = $value[0]['weekday'];
-    $day_class = $value[0]['day_class'];
+    $week  = $value['week'];
+    $year  = $value['year'];
+    $month = $value['month'];
+    $weekday = $value['weekday'];
+    $day_class = $value['day_class'];
     ?>
     <table class="calendar">
         <thead>
@@ -202,14 +167,14 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
             <?php for ($j = 0; $j < count($week[$year][$month]); $j ++):?>
             <tr>
                 <?php for ($i = 0; $i <= 6; $i++):?>
-                    <?php $day = $week[$year][$month][$j][$i];?>
-                    <td class="<?php echo $day_class[$year][$month][$j][$i]['W'];?>">
+                    <?php $day = $week[$year][$month][$j][$i]['d'];?>
+                    <td class="<?php echo $day_class[$year][$month][$j][$i]['weekday_index'];?>">
                         <!-- 日付情報 -->
                         <div class="<?php echo $day_class[$year][$month][$j][$i]['Today'];?>" onmouseover="this.style.backgroundColor='orange'" onmouseout="this.style.backgroundColor=''">
                             <?php if (isset($day) == false) :?>
                                 <?php echo '';?>
                             <?php else :?>
-                                <div class="day" id="<?php echo $year.'-'.$month.'-'.$day;?>"><?php echo $day;?></div>
+                                 <div class="day" data-dateinfo="<?php echo $week[$year][$month][$j][$i]['y'].'-'.$week[$year][$month][$j][$i]['m'].'-'.$day ;?>"><?php echo $day;?></div>
                             <?php endif ?>
                         </div>
                         <!-- 祝日情報 -->
@@ -218,7 +183,7 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
                         </div>
                         <!-- オークションコラム -->
                         <div class="aucColumInfo">
-                        <?php if ($day_class[$year][$month][$j][$i]['W'] != 'not') :?>
+                        <?php if ($day_class[$year][$month][$j][$i]['weekday_index'] != 'not') :?>
                             <a href=" <?php echo $auc_colum[$year][$month][$day]['link'];?> " title = '<?php echo $auc_colum[$year][$month][$day]['title'];?>' >
                                 <?php echo $auc_colum[$year][$month][$day]['title'];?>
                             </a>
@@ -226,10 +191,10 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
                         </div>
                         <!-- スケジュール -->
                         <div class="scheduleInfo">
-                        <?php if ($day_class[$year][$month][$j][$i]['W'] != 'not') :?>
+                        <?php if ($day_class[$year][$month][$j][$i]['weekday_index'] != 'not') :?>
                             <?php if (isset($schedule[$year][$month][$day])) :?>
                                 <?php foreach ($schedule[$year][$month][$day] as $key => $value) :?> 
-                                    <div class="calendar_schedule" id="<?php echo 'sch_id='.$key ;?>" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration=''"> <?php echo '-'.h($value['title']);?><br></div>
+                                    <div class="calendar_schedule" data-scheduleid="<?php echo $key ;?>" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration=''"> <?php echo '-'.h($value['title']);?><br></div>
                                 <?php endforeach;?>
                             <?php endif ;?>
                         <?php endif;?>

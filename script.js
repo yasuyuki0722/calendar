@@ -25,7 +25,6 @@ $(function(){
         //もし、最初に選んでいた日が、新しく生成した日付を超えていたら
         if (day > day_max) {
             $('#'+dd_id+' .sch_day option[value='+day_max+']').attr('selected',true);
-            console.log($('#'+dd_id+' .sch_day option[value='+day_max+']'));
         } else {
             $('#'+dd_id+' .sch_day option[value='+day+']').attr('selected',true);
         }
@@ -33,24 +32,16 @@ $(function(){
     })
 })
 
-// $(function(){
-//     $('.year_month').change(function(){
-//         var day_count;
-//         var dd_class = $(this).parent('dd').attr('class');
-//         var option_len = $(dd_class+' .day').html('');
-//         for(var i=0;day_count>=i;i++)
-//         {
-//             $(dd_class+' .day').append('<option value="'+$i+'">'+$i+'</option>');
-//         }
-// });
-
 $(function(){
      $('#submit').click(function(){
         var error_count = 0;
 
         var sch_title = $('input[name="sch_title"]').val();
-        if (sch_title =='') {
+        if (sch_title == '') {
             $('#error_msg_title').text('＊タイトルは入力必須');
+            error_count++;
+        } else if (sch_title.length > 45) {
+            $('#error_msg_title').text('＊タイトルは４５字以内');
             error_count++;
         } else {
             $('#error_msg_title').text('');
@@ -192,7 +183,7 @@ $(function(){
         formReset();
         $('#delete').css('display','none');
         //tableから何年何月何日か取得
-        var get_date = $(this).attr('id');
+        var get_date = $(this).data('dateinfo');
         var sch_date = get_date.split('-');
         var start_year = sch_date[0],
             start_month = sch_date[1],
@@ -245,7 +236,14 @@ function comboBoxMake(year, month, day, hour, minute, dd_id){
     //当年にselected
     $('#'+dd_id+' .sch_year option[value='+year+']').attr('selected',true);
 
-    //月は生成しなくていい
+    //月の生成
+    //初期化
+    $(month_option).html('');
+
+    //年option作成
+    for (var i = 1; i <= 12; i++){
+        $(month_option).append('<option value="'+i+'">'+i+'</option>');
+    }
     //当月にselected
     $('#'+dd_id+' .sch_month option[value='+month+']').attr('selected',true);
 
@@ -296,19 +294,19 @@ function comboBoxMake(year, month, day, hour, minute, dd_id){
 $(function(){
     $('.calendar_schedule').click(function(){
         formReset();
-        //id="sch_id=**"の形のidを取得
-        var sch_id = $(this).attr('id');
-        var schedule_id = sch_id.split('=');
+        //data-scheduleidを取得
+        var schedule_id = $(this).data('scheduleid');
+        console.log(schedule_id);
 
         //div schedule_id内にschedule_idを書き込む
-        $('#schedule_id').text(schedule_id[1]);
+        $('#schedule_id').text(schedule_id);
 
         $(function(){
             $.ajax({
                 type: 'post',
                 url: 'cal_sql.php',
                 data: {
-                    'schedule_id' : schedule_id[1],
+                    'schedule_id' : schedule_id,
                     'command' : 'select'
                 },
                 success: function(data){
@@ -327,9 +325,6 @@ $(function(){
                         end_d = end_date.getDate(),
                         end_h = end_date.getHours(),
                         end_i = end_date.getMinutes();
-
-                        console.log(end_h);
-                        console.log(end_i);
 
                     //コンボボックス作成
                     comboBoxMake(start_y, start_m, start_d, start_h, start_i, 'start_date');
