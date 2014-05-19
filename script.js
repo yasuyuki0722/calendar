@@ -102,7 +102,11 @@ $(function(){
                             'command'       : 'insert'
                         },
                         success: function(data){
-                            alert(data);
+                        },
+                        error: function(XMLHttpRequest, textStatus, errorThrown){
+                            alert('Error : ', + errorThrown.message);
+                            alert('Error : ', + XMLHttpRequest.status);
+                            alert('Error : ', + textStatus);
                         }
                     })
                 })
@@ -122,7 +126,9 @@ $(function(){
                             'command'       : 'update'
                         },
                         success: function(data){
-                            alert(data);
+                        },
+                        error: function(XMLHttpRequest, textStatus, errorThrown){
+                            alert('通信エラー');
                         }
                     })
                 })
@@ -148,7 +154,9 @@ $(function(){
                     'command' : 'delete'
                 },
                 success: function(data){
-                    console.log(data);
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown){
+                    alert('通信エラー');
                 }
             })
         })
@@ -296,7 +304,6 @@ $(function(){
         formReset();
         //data-scheduleidを取得
         var schedule_id = $(this).data('scheduleid');
-        console.log(schedule_id);
 
         //div schedule_id内にschedule_idを書き込む
         $('#schedule_id').text(schedule_id);
@@ -333,7 +340,11 @@ $(function(){
                     //inputにタイトル、内容を書き込む
                     $('#schedule_title').val(schedule_array['schedule_title']);
                     $('#schedule_plan').val(schedule_array['schedule_plan']);
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown){
+                    alert('通信エラー');
                 }
+
             })
         })
 
