@@ -59,7 +59,7 @@ a:visited{
 
 }
 
-td{
+td {
     padding: 8px;
     border 1px solid #ccc;
     text-align:center;
@@ -101,13 +101,13 @@ th{
     font-size: 60%;
 }
 
-.holidayInfo {
+.holiday_info {
     width: 70px;
     font-size: 11px;
     color: red;
 }
 
-.aucColumInfo{
+.auc_columns_info{
     width: 70px;
     font-size: 10px;
     background-color: lavender;
@@ -116,7 +116,7 @@ th{
     text-overflow: ellipsis;
 }
 
-.scheduleInfo{
+.schedule_info{
     text-align: left;
     width: 70px;
     font-size: 10px;

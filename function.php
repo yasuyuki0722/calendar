@@ -47,12 +47,21 @@ function calYearMonth($calendar_number, $this_year, $this_month){
 function yearMonth(){
     //$_getで取得
     $year_month = isset($_GET['year_month']) ? $_GET['year_month'] : date('Y-n');
+
     $timestamp  = strtotime($year_month.'-1'); 
+
     if ($timestamp === false) {
         $timestamp = time();
     }
+
     //先月、来月日付取得
     list($this_year, $this_month) = explode('-', date('Y-n', $timestamp));
+
+    //四桁の年数に対応
+    if (strlen($this_year) != 4 ) {
+        $this_year = date('Y');
+    }
+
     list($prev_year, $prev_month) = explode('-', date('Y-n', mktime(0, 0, 0, $this_month - 1, 1, $this_year)));
     list($next_year, $next_month) = explode('-', date('Y-n', mktime(0, 0, 0, $this_month + 1, 1, $this_year)));
         return array(

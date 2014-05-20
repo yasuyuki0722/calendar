@@ -128,7 +128,7 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
 
 <div align='center'>
     <h1>かれんだーだよ！</h1>
-    <a href="?year_month=<?php echo $prev_year.'-'.$prev_month; ?>">前月</a>
+    <a href="?year_month=<?php echo $prev_year.'-'.$prev_month; ?>">次月</a>
     <a href="?year_month=<?php echo date('Y-n'); ?>">今月</a>
     <a href="?year_month=<?php echo $next_year.'-'.$next_month; ?>">次月</a>
     <form action='' method='get'>
@@ -137,7 +137,7 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
                 <?php if ($value['year'] == $this_year && $value['month'] == $this_month):?>
                     <option value="<?php echo $value['year'].'-'.$value['month'];?>" selected><?php echo $value['year'].'年'.$value['month'].'月'?></option>
                 <?php else:?>
-                    <option value="<?php echo  $value['year'].'-'.$value['month'];?>"><?php echo $value['year'].'年'.$value['month'].'月';?></option>
+                    <option value="<?php echo $value['year'].'-'.$value['month'];?>"><?php echo $value['year'].'年'.$value['month'].'月';?></option>
                 <?php endif;?>
             <?php endforeach;?>
         </select>
@@ -179,11 +179,11 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
                             <?php endif ?>
                         </div>
                         <!-- 祝日情報 -->
-                        <div class="holidayInfo">
+                        <div class="holiday_info">
                             <?php echo $holidays[$year][$month][$day];?>
                         </div>
                         <!-- オークションコラム -->
-                        <div class="aucColumInfo">
+                        <div class="auc_columns_info">
                         <?php if ($day_class[$year][$month][$j][$i]['weekday_index'] != 'not') :?>
                             <a href=" <?php echo $auc_colum[$year][$month][$day]['link'];?> " title = '<?php echo $auc_colum[$year][$month][$day]['title'];?>' >
                                 <?php echo $auc_colum[$year][$month][$day]['title'];?>
@@ -191,7 +191,7 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
                         <?php endif;?>
                         </div>
                         <!-- スケジュール -->
-                        <div class="scheduleInfo">
+                        <div class="schedule_info">
                         <?php if ($day_class[$year][$month][$j][$i]['weekday_index'] != 'not') :?>
                             <?php if (isset($schedule[$year][$month][$day])) :?>
                                 <?php foreach ($schedule[$year][$month][$day] as $key => $value) :?> 
