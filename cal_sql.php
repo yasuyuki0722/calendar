@@ -18,8 +18,6 @@ $link = mysqli_connect($url, $user, $pass, $db);
 
 //接続状態チェック
 if (mysqli_connect_errno()) {
-    // die(mysqli_conect_error());
-    echo 'DBへの接続が失敗しました。';
     return;
 }
 

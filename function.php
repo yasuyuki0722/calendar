@@ -238,7 +238,7 @@ function holidays($year, $month, $calendar_number){
 *
 *@return array 年月日に対応したオーくファンコラム情報
 */
-function aucColum() {
+function aucColumns() {
     $rss ='http://aucfan.com/article/feed/';
     $xml = simplexml_load_file($rss);
     //ファイルがとれなければ終わる
@@ -250,12 +250,12 @@ function aucColum() {
     foreach ($xml->channel->item as $value) {
         $pub_date = $value->pubDate;
         list($year, $month, $day) = explode('-', date('Y-n-j', strtotime($pub_date)));
-        $auc_colum_data[$year][$month][$day] = array(
+        $auc_columns_data[$year][$month][$day] = array(
             'title' => $value->title,
             'link' => $value->link
             );
     }
-    return $auc_colum_data;
+    return $auc_columns_data;
 }
 
 /**
@@ -284,7 +284,7 @@ function schedulesGet($year, $month, $calendar_number){
 
     //接続状態チェック
     if (mysqli_connect_errno()) {
-        die(mysqli_conect_error());
+        echo '接続に失敗しました';
     }
     //プリペアドステートメントを用いてselect
     if ($stmt = mysqli_prepare($link, 'SELECT * FROM cal_schedules WHERE deleted_at IS NULL AND ((schedule_start BETWEEN ? AND ?) OR (schedule_end BETWEEN ? AND ?))')){;
@@ -359,6 +359,41 @@ function calendarCount($calendar_number){
     $count = -floor($calendar_number/2);
     return $count;
 }
+
+
+/**
+*表示するカレンダーの数を返す
+*
+*@return int
+*/
+function calendarNumber(){
+    if (isset($_GET['calendar_number']) && ctype_digit($_GET['calendar_number'])) {
+        $number = $_GET['calendar_number'];
+        $number = intval($number);
+    } else {
+        $number = 3;
+    }
+    return $number;
+}
+
+/**
+*表示するカレンダーの始まるの曜日を返す
+*
+*@return int 0 ~ 6
+*/
+function calendarIndex(){
+    if (isset($_GET['calendar_first_day'])) {
+        
+    }
+    if (isset($_GET['calendar_first_day']) && ctype_digit($_GET['calendar_first_day'])) {
+        $number = $_GET['calendar_first_day'];
+        $number = intval($number);
+    } else {
+        $number = 0;
+    }
+    return $number;
+}
+
 
 
 

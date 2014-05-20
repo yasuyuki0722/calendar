@@ -1,3 +1,7 @@
+/**
+*
+*
+*/
 
 $(function(){
     $('.combo_year_month').change(function(){
@@ -105,6 +109,7 @@ $(function(){
                         success: function(data){
                         },
                         error: function(XMLHttpRequest, textStatus, errorThrown){
+                            alert('接続に失敗しました');
                         }
                     })
                 })
@@ -127,6 +132,7 @@ $(function(){
                         success: function(data){
                         },
                         error: function(XMLHttpRequest, textStatus, errorThrown){
+                            alert('接続に失敗しました');
                         }
                     })
                 })
@@ -157,6 +163,7 @@ $(function(){
                 success: function(data){
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown){
+                    alert('接続に失敗しました');
                 }
             })
         })

@@ -7,9 +7,9 @@ date_default_timezone_get('Asia/Tolyo');
 
 
 //表示するカレンダーの数
-$calendar_number = 3;
+$calendar_number = calendarNumber();
 //カレンダーの先頭の曜日(sun=0, mon = 1,,,sat=6)
-$calendar_first_day = 0;
+$calendar_first_day = calendarIndex();
 
 //曜日設定
 $weekday_index = weekdaySet($calendar_first_day);
@@ -33,13 +33,11 @@ foreach ($calendar_y_m as $value) {
 }
 
 //オークションコラム
-$auc_colum = aucColum();
+$auc_columns = aucColumns();
 
 //予定
 $schedule = schedulesGet($this_year, $this_month, $calendar_number);
 
-// var_dump($calendar_make);
-//exit();
 ?>
 
 <!DOCTYPE html>
@@ -48,7 +46,7 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
     <meta charset='utf-8'>
     <title>calendar</title>
     <link rel='stylesheet' href='style.css'>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 </head>
 <body>
 <div id="shadow"></div>
@@ -185,8 +183,8 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
                         <!-- オークションコラム -->
                         <div class="auc_columns_info">
                         <?php if ($day_class[$year][$month][$j][$i]['weekday_index'] != 'not') :?>
-                            <a href=" <?php echo $auc_colum[$year][$month][$day]['link'];?> " title = '<?php echo $auc_colum[$year][$month][$day]['title'];?>' >
-                                <?php echo $auc_colum[$year][$month][$day]['title'];?>
+                            <a href=" <?php echo $auc_columns[$year][$month][$day]['link'];?> " title = '<?php echo $auc_columns[$year][$month][$day]['title'];?>' >
+                                <?php echo $auc_columns[$year][$month][$day]['title'];?>
                             </a>
                         <?php endif;?>
                         </div>
