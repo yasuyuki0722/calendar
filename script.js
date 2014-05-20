@@ -331,8 +331,7 @@ $(function(){
                     var schedule_array = JSON.parse(data); 
 
                     var start_date = new Date(schedule_array['schedule_start']);
-                    alert(schedule_array['schedule_start']);
-                    alert(start_date);
+
                     var start_y = start_date.getFullYear(),
                         start_m = start_date.getMonth() + 1,
                         start_d = start_date.getDate(),
@@ -354,7 +353,7 @@ $(function(){
                     $('#schedule_plan').val(schedule_array['schedule_plan']);
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown){
-                    alert('miss');
+                    alert('接続に失敗しました');
                 }
 
             })
