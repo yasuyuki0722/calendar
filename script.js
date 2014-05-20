@@ -107,6 +107,7 @@ $(function(){
                             'command'       : 'insert'
                         },
                         success: function(data){
+                            $(location).attr('href', '');
                         },
                         error: function(XMLHttpRequest, textStatus, errorThrown){
                             alert('接続に失敗しました');
@@ -130,6 +131,7 @@ $(function(){
                             'command'       : 'update'
                         },
                         success: function(data){
+                            $(location).attr('href', '');
                         },
                         error: function(XMLHttpRequest, textStatus, errorThrown){
                             alert('接続に失敗しました');
@@ -140,7 +142,7 @@ $(function(){
             }
 
             // $('form').submit();
-            $(location).attr('href', '');
+            // $(location).attr('href', '');
 
         }
     })
@@ -161,6 +163,7 @@ $(function(){
                     'command' : 'delete'
                 },
                 success: function(data){
+                    $(location).attr('href', '');
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown){
                     alert('接続に失敗しました');
@@ -169,7 +172,7 @@ $(function(){
         })
 
         // $('form').submit();
-        $(location).attr('href', '');
+        // $(location).attr('href', '');
     })
 })
 
