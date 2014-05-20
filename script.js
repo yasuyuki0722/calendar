@@ -327,7 +327,7 @@ $(function(){
                     'schedule_id' : schedule_id,
                     'command' : 'select'
                 },
-                complete: function(data){
+                success: function(data){
                     var schedule_array = JSON.parse(data); 
 
                     var start_date = new Date(schedule_array['schedule_start']);
@@ -354,6 +354,7 @@ $(function(){
                     $('#schedule_plan').val(schedule_array['schedule_plan']);
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown){
+                    alert('miss');
                 }
 
             })

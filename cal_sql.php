@@ -57,10 +57,10 @@ if ($command == 'select') {
             break;
     }
     //SQL実行
-    mysqli_stmt_execute($stmt);
-    $result = array('error' => 'msg');
-    $result = json_encode($result);
-    echo $result;
+    // mysqli_stmt_execute($stmt);
+    // $result = array('error' => 'msg');
+    // $result = json_encode($result);
+    // echo $result;
 
 }
 
