@@ -23,10 +23,12 @@ if (mysqli_connect_errno()) {
 
 
 if ($command == 'select') {
-    if ($stmt = mysqli_prepare($link, 'SELECT * FROM cal_schedules WHERE schedule_id = ?')){
+    //if ($stmt = mysqli_prepare($link, 'SELECT * FROM cal_schedules WHERE schedule_id = ?')){
+    if ($stmt = mysqli_prepare($link, "select schedule_id,user_id,schedule_title,schedule_plan,date_format(schedule_start,'%Y/%c/%e %T'),date_format(schedule_end,'%Y/%c/%e %T') from cal_schedules WHERE schedule_id = ?")){
         mysqli_stmt_bind_param($stmt, 's', $id);
         mysqli_stmt_execute($stmt);
-        mysqli_stmt_bind_result($stmt, $sch_id, $user_id, $sch_title, $sch_plan, $sch_start, $sch_end, $creat, $update, $delete);
+        // mysqli_stmt_bind_result($stmt, $sch_id, $user_id, $sch_title, $sch_plan, $sch_start, $sch_end, $creat, $update, $delete);
+        mysqli_stmt_bind_result($stmt, $sch_id, $user_id, $sch_title, $sch_plan, $sch_start, $sch_end);
         while (mysqli_stmt_fetch($stmt)){
             //DBよりデータ受け取り
             $result = array(
@@ -57,7 +59,7 @@ if ($command == 'select') {
             break;
     }
     //SQL実行
-    // mysqli_stmt_execute($stmt);
+    mysqli_stmt_execute($stmt);
     // $result = array('error' => 'msg');
     // $result = json_encode($result);
     // echo $result;
