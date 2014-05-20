@@ -106,7 +106,8 @@ $(function(){
                             'command'       : 'insert'
                         },
                         success: function(data){
-                            $(location).attr('href', '');
+                            // $(location).attr('href', '');
+                            alert('接続に成功しました');
                         },
                         error: function(XMLHttpRequest, textStatus, errorThrown){
                             alert('接続に失敗しました');
@@ -129,7 +130,8 @@ $(function(){
                             'command'       : 'update'
                         },
                         success: function(data){
-                            $(location).attr('href', '');
+                            alert('接続に成功しました');
+                            // $(location).attr('href', '');
                         },
                         error: function(XMLHttpRequest, textStatus, errorThrown){
                             alert('接続に失敗しました');
@@ -160,7 +162,8 @@ $(function(){
                     'command' : 'delete'
                 },
                 success: function(data){
-                    $(location).attr('href', '');
+                    alert('接続に成功しました');
+                    // $(location).attr('href', '');
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown){
                     alert('接続に失敗しました');
@@ -328,6 +331,8 @@ $(function(){
                     var schedule_array = JSON.parse(data); 
 
                     var start_date = new Date(schedule_array['schedule_start']);
+                    alert(schedule_array['schedule_start']);
+                    alert(start_date);
                     var start_y = start_date.getFullYear(),
                         start_m = start_date.getMonth() + 1,
                         start_d = start_date.getDate(),
@@ -344,7 +349,6 @@ $(function(){
                     //コンボボックス作成
                     comboBoxMake(start_y, start_m, start_d, start_h, start_i, 'start_date');
                     comboBoxMake(end_y, end_m, end_d, end_h, end_i, 'end_date');
-
                     //inputにタイトル、内容を書き込む
                     $('#schedule_title').val(schedule_array['schedule_title']);
                     $('#schedule_plan').val(schedule_array['schedule_plan']);

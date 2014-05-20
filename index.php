@@ -114,9 +114,9 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
             </dd>
                 <span id="error_msg_plan"></span>
         </dl>
-        <button name="submit" id="submit">保存</button>
-        <button name="delete" id="delete">削除</button>
-        <button name="reset" id="reset">キャンセル</button>
+        <button type="button" name="submit" id="submit">保存</button>
+        <button type="button" name="delete" id="delete">削除</button>
+        <button type="button" name="reset" id="reset">キャンセル</button>
     </form>
     </div>
 </div>
