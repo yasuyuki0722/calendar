@@ -105,9 +105,9 @@ $(function(){
                             'schedule_end'  : end_ymd,
                             'command'       : 'insert'
                         },
-                        success: function(data){
-                            // $(location).attr('href', '');
-                            alert('接続に成功しました');
+                        complete: function(data){
+                            $(location).attr('href', '');
+                            //alert('接続に成功しました');
                         },
                         error: function(XMLHttpRequest, textStatus, errorThrown){
                             alert('接続に失敗しました');
@@ -129,9 +129,9 @@ $(function(){
                             'schedule_end'  : end_ymd,
                             'command'       : 'update'
                         },
-                        success: function(data){
-                            alert('接続に成功しました');
-                            // $(location).attr('href', '');
+                        complete: function(data){
+                            //alert('接続に成功しました');
+                            $(location).attr('href', '');
                         },
                         error: function(XMLHttpRequest, textStatus, errorThrown){
                             alert('接続に失敗しました');
@@ -161,9 +161,9 @@ $(function(){
                     'schedule_id' : sch_id,
                     'command' : 'delete'
                 },
-                success: function(data){
-                    alert('接続に成功しました');
-                    // $(location).attr('href', '');
+                complete: function(data){
+                    //alert('接続に成功しました');
+                    $(location).attr('href', '');
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown){
                     alert('接続に失敗しました');
@@ -327,7 +327,7 @@ $(function(){
                     'schedule_id' : schedule_id,
                     'command' : 'select'
                 },
-                success: function(data){
+                complete: function(data){
                     var schedule_array = JSON.parse(data); 
 
                     var start_date = new Date(schedule_array['schedule_start']);
