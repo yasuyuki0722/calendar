@@ -98,7 +98,6 @@ $(function(){
                     $.ajax({
                         type: 'post',
                         url: 'cal_sql.php',
-                        timeout: 10000,
                         data: {
                             'schedule_title': sch_title,
                             'schedule_plan' : sch_plan,
@@ -121,7 +120,6 @@ $(function(){
                     $.ajax({
                         type: 'post',
                         url: 'cal_sql.php',
-                        timeout: 10000,
                         data: {
                             'schedule_id'   : schedule_id,
                             'schedule_title': sch_title,
@@ -157,7 +155,6 @@ $(function(){
             $.ajax({
                 type: 'post',
                 url: 'cal_sql.php',
-                timeout: 10000,
                 data: {
                     'schedule_id' : sch_id,
                     'command' : 'delete'
@@ -323,7 +320,6 @@ $(function(){
             $.ajax({
                 type: 'post',
                 url: 'cal_sql.php',
-                timeout: 10000,
                 data: {
                     'schedule_id' : schedule_id,
                     'command' : 'select'
