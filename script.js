@@ -10,8 +10,6 @@ function sessionSet(){
         url: 'session.php'
     }).done(function(data){
         $('input[name="nk_token"]').val(data);
-    }).always(function(data){
-        return ;
     }).fail(function(){
         alert('接続に失敗しました（Ajax/session）');
     })

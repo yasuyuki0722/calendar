@@ -46,16 +46,6 @@ $schedule = schedulesGet($this_year, $this_month, $calendar_number);
     <title>calendar</title>
     <link rel='stylesheet' href='style.css'>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script type="text/javascript">
-    <!--
-    var flg = false;
-    if (flg) {
-        return false;
-    } else {
-        flg = true;
-    }
-    -->
-    </script>
 </head>
 <body>
 <div id="shadow"></div>
