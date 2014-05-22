@@ -1,4 +1,13 @@
 <?php
+session_start();
+
+$token_session = $_SESSION['nk_token'];
+$token_post = $_POST['nk_token'];
+if ($token_post == null || $token_post !== $token_session) {
+    $result = array('error_msg' => 'miss:不正な接続ですお');
+    echo json_encode($result);
+    exit;
+}
 
 $url = 'localhost';
 $user = 'root';
@@ -13,12 +22,22 @@ $end   = $_POST['schedule_end'];
 $id    = $_POST['schedule_id'];
 $command = $_POST['command'];
 
+if ($command === 'resister') {
+    if ($id === '') {
+        $command = 'insert';
+    } else {
+        $command = 'update';
+    }
+}
+
 //MySQLに接続
 $link = mysqli_connect($url, $user, $pass, $db);
 
 //接続状態チェック
 if (mysqli_connect_errno()) {
-    return;
+    $result = array('error_msg' => '接続に失敗しました');
+    echo json_encode($result);
+    exit;
 }
 
 
@@ -60,10 +79,14 @@ if ($command == 'select') {
     }
     //SQL実行
     mysqli_stmt_execute($stmt);
-    // $result = array('error' => 'msg');
-    // $result = json_encode($result);
-    // echo $result;
+    $result = array('error_msg' => 'success');
+    echo json_encode($result);
 
+    $_SESSION = array();
+    if (isset($_COOKIE[session_name()])) {
+        setcookie(session_name(), '', time() - 42000, '/');
+    }
+    session_destroy();
 }
 
 mysqli_stmt_close($stmt);

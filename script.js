@@ -2,6 +2,20 @@
 *
 *
 */
+resister_flg =false;
+
+function sessionSet(){
+    $.ajax({
+        async:false,
+        url: 'session.php'
+    }).done(function(data){
+        $('input[name="nk_token"]').val(data);
+    }).always(function(data){
+        return ;
+    }).fail(function(){
+        alert('接続に失敗しました（Ajax/session）');
+    })
+}
 
 $(function(){
     $('.combo_year_month').change(function(){
@@ -10,7 +24,7 @@ $(function(){
         //selectedされている値を取得
         var year  = $('#'+dd_id+' .sch_year option:selected').val();
         var month = $('#'+dd_id+' .sch_month option:selected').val();
-        var day   = $('#'+dd_id+' .sch_day option:selected').val()
+        var day   = $('#'+dd_id+' .sch_day option:selected').val();
         //日のoptionを取得
         var day_option = $('#'+dd_id+' .sch_day');
 
@@ -32,14 +46,12 @@ $(function(){
         } else {
             $('#'+dd_id+' .sch_day option[value='+day+']').attr('selected',true);
         }
-
     })
 })
 
 $(function(){
      $('#submit').click(function(){
         var error_count = 0;
-
         var sch_title = $('input[name="sch_title"]').val();
         if (sch_title == '') {
             $('#error_msg_title').text('＊タイトルは入力必須');
@@ -86,38 +98,19 @@ $(function(){
 
         //schedule_idを取得
         var schedule_id = $('#schedule_id').text();
-
+        //'保存'連打対応：一回目ならflgをtrueに
+        if (typeof flg == "undefined") {
+            flg = true;
+            var resister_flg =false;
+        }
         //エラーチェック
         if (error_count > 0) {
             return false;
         } else {
-
-            if (schedule_id == ''){
-
+            if (flg) {
+                var token = $('input[name="nk_token"]').val();
                 $(function(){
-                    $.ajax({
-                        type: 'post',
-                        url: 'cal_sql.php',
-                        data: {
-                            'schedule_title': sch_title,
-                            'schedule_plan' : sch_plan,
-                            'schedule_start': start_ymd,
-                            'schedule_end'  : end_ymd,
-                            'command'       : 'insert'
-                        },
-                        complete: function(data){
-                            $(location).attr('href', '');
-                            //alert('接続に成功しました');
-                        },
-                        error: function(XMLHttpRequest, textStatus, errorThrown){
-                            alert('接続に失敗しました');
-                        }
-                    })
-                })
-
-            } else {
-
-                $(function(){
+                    console.log(token);
                     $.ajax({
                         type: 'post',
                         url: 'cal_sql.php',
@@ -127,23 +120,26 @@ $(function(){
                             'schedule_plan' : sch_plan,
                             'schedule_start': start_ymd,
                             'schedule_end'  : end_ymd,
-                            'command'       : 'update'
-                        },
-                        complete: function(data){
-                            //alert('接続に成功しました');
-                            $(location).attr('href', '');
-                        },
-                        error: function(XMLHttpRequest, textStatus, errorThrown){
-                            alert('接続に失敗しました');
+                            'command'       : 'resister',
+                            'nk_token':token
                         }
+                    }).done(function(data){
+                        console.log(data);
+                        var schedule_array = JSON.parse(data); 
+                        if (typeof schedule_array['error_msg'] != undefined) {
+                            resister_flg = true;
+                        }
+                    }).always(function(data){
+                        if (resister_flg) {
+                        //'保存'連打対応：flgをfalseに
+                        flg = false;
+                        $(location).attr('href', '');
+                        }
+                    }).fail(function(data){
+                        alert('接続に失敗しました');
                     })
                 })
-
             }
-
-            // $('form').submit();
-            // $(location).attr('href', '');
-
         }
     })
 })
@@ -152,27 +148,31 @@ $(function(){
 $(function(){
     $('#delete').click(function(){
         var sch_id = $('#schedule_id').text();
-
+        var token = $('input[name="nk_token"]').val();
         $(function(){
             $.ajax({
                 type: 'post',
                 url: 'cal_sql.php',
                 data: {
                     'schedule_id' : sch_id,
+                    'nk_token' : token,
                     'command' : 'delete'
-                },
-                complete: function(data){
-                    //alert('接続に成功しました');
+                }
+            }).done(function(data){
+                var schedule_array = JSON.parse(data); 
+                if (typeof schedule_array['error_msg'] != undefined) {
+                    resister_flg = true
+                }
+            }).always(function(data){
+                if (resister_flg) {
                     $(location).attr('href', '');
-                },
-                error: function(XMLHttpRequest, textStatus, errorThrown){
+                } else {
                     alert('接続に失敗しました');
                 }
+            }).fail(function(data){
+                alert('接続に失敗しました');
             })
         })
-
-        // $('form').submit();
-        // $(location).attr('href', '');
     })
 })
 
@@ -200,6 +200,8 @@ $(function(){
 $(function(){
     $('.day').click(function(){
         formReset();
+        //sessionにワンタイムトークンセット
+        sessionSet();
         $('#delete').css('display','none');
         //tableから何年何月何日か取得
         var get_date = $(this).data('dateinfo');
@@ -313,11 +315,13 @@ function comboBoxMake(year, month, day, hour, minute, dd_id){
 $(function(){
     $('.calendar_schedule').click(function(){
         formReset();
+        sessionSet();
         //data-scheduleidを取得
         var schedule_id = $(this).data('scheduleid');
-
         //div schedule_id内にschedule_idを書き込む
         $('#schedule_id').text(schedule_id);
+
+        var token = $('input[name="nk_token"]').val();
 
         $(function(){
             $.ajax({
@@ -325,11 +329,12 @@ $(function(){
                 url: 'cal_sql.php',
                 data: {
                     'schedule_id' : schedule_id,
-                    'command' : 'select'
-                },
-                success: function(data){
-                    var schedule_array = JSON.parse(data); 
-
+                    'command' : 'select',
+                    'nk_token' : token
+                }
+            }).done(function(data){
+                var schedule_array = JSON.parse(data); 
+                if (typeof schedule_array['error_msg'] == "undefined") {
                     var start_date = new Date(schedule_array['schedule_start']);
 
                     var start_y = start_date.getFullYear(),
@@ -351,17 +356,16 @@ $(function(){
                     //inputにタイトル、内容を書き込む
                     $('#schedule_title').val(schedule_array['schedule_title']);
                     $('#schedule_plan').val(schedule_array['schedule_plan']);
-                },
-                error: function(XMLHttpRequest, textStatus, errorThrown){
-                    alert('接続に失敗しました');
+                    } else {
+                        alert(schedule_array['error_msg']);
                 }
-
+            }).fail(function(){
+                alert('接続に失敗しました');
             })
         })
-
         $('#schedule_edit').fadeIn();
         $('#shadow').fadeIn();
-
     })
 })
+
 

@@ -242,15 +242,15 @@ function aucColumns() {
     $rss ='http://aucfan.com/article/feed/';
     $xml = simplexml_load_file($rss);
     //ファイルがとれなければ終わる
-    if (isset($xml)) {
-    }else{
+    if (! isset($xml)) {
+        echo '接続に失敗しました';
         return;
     }
     //xmlから年月日とtitle、linkを取得
     foreach ($xml->channel->item as $value) {
         $pub_date = $value->pubDate;
         list($year, $month, $day) = explode('-', date('Y-n-j', strtotime($pub_date)));
-        $auc_columns_data[$year][$month][$day] = array(
+        $auc_columns_data[$year][$month][$day][] = array(
             'title' => $value->title,
             'link' => $value->link
             );
